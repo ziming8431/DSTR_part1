@@ -1,3 +1,5 @@
 #include <iostream>
 
-int main() {};
+int main() {
+  cout << "h";
+};
