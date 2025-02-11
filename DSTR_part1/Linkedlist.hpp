@@ -7,30 +7,26 @@
 
 using namespace std;
 
-struct Article{
+struct Article {
 	string title;
 	string content;
 	string subject;
 	string date;
-};
-
-struct Node {
-	Article article;
-	Node* nextaddress;
+	Article* nextaddress;
 };
 
 class LinkedList {
 private:
-	Node* head = nullptr;
-	Node* tail = nullptr;
-	int size;
+	Article* head = nullptr;
+	Article* tail = nullptr;
+	int size = 0;
 
 public:
 	LinkedList();
 	~LinkedList();
 	// function declarations
 	Article* createArticle(string title, string content, string subject, string date);
-	void InsertArticle(Article article);
+	void InsertArticle(Article* article); //insert into linked list
 	void loadFromCSV(string filename);
 	void displayArticles();
 	void sortByDate();
