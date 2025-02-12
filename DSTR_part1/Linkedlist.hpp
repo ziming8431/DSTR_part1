@@ -24,7 +24,7 @@ private:
 public:
 	LinkedList();
 	~LinkedList();
-	// function declarations
+	// function declarationsjjjj
 	Article* createArticle(string title, string content, string subject, string date);
 	void InsertArticle(Article* article); //insert into linked list
 	void loadFromCSV(string filename);
