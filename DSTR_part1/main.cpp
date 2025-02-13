@@ -1,8 +1,8 @@
-#include "Linkedlist.hpp"
+#include "DoublyLinkedList.hpp"
 
 int main() {
-	LinkedList trueNewsList;
-	LinkedList fakeNewsList;
+	DoublyLinkedList trueNewsList;
+	DoublyLinkedList fakeNewsList;
 
 	trueNewsList.loadFromCSV("true.csv");
 	fakeNewsList.loadFromCSV("fake.csv");

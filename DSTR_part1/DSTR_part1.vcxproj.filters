@@ -23,7 +23,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Linkedlist.hpp">
+    <ClInclude Include="DoublyLinkedList.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
