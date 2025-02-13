@@ -20,5 +20,6 @@ int main() {
 	// Search for fake news articles
 	//trueNewsList.searchFakeNews();
 
+
 	return 0;
 }
