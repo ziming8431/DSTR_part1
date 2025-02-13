@@ -7,11 +7,11 @@ int main() {
 	trueNewsList.loadFromCSV("true.csv");
 	fakeNewsList.loadFromCSV("fake.csv");
 
-	trueNewsList.sortByDate();
-	fakeNewsList.sortByDate();
+	//trueNewsList.sortByDate();
+	//fakeNewsList.sortByDate();
 
-	cout << "Total True News Articles: " << trueNewsList.countArticles() << endl;
-	cout << "Total Fake News Articles: " << fakeNewsList.countArticles() << endl;
+	//cout << "Total True News Articles: " << trueNewsList.countArticles() << endl;
+	//cout << "Total Fake News Articles: " << fakeNewsList.countArticles() << endl;
 
 	// Display articles
 	//cout << "\nDisplaying True News Articles:\n";

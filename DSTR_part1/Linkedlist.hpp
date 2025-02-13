@@ -9,7 +9,7 @@ using namespace std;
 
 struct Article {
 	string title;
-	string content;
+	string text;
 	string subject;
 	string date;
 	Article* nextaddress;
@@ -25,12 +25,14 @@ public:
 	LinkedList();
 	~LinkedList();
 	// function declarations
-	Article* createArticle(string title, string content, string subject, string date);
+	Article* createArticle(string title, string text, string subject, string date);
 	void InsertArticle(Article* article); //insert into linked list
 	void loadFromCSV(string filename);
 	void displayArticles();
 	void sortByDate();
 	int countArticles();
 	void searchFakeNews();
+	bool isValidRow(const Article& row);
+	void loadToTxt(string filename);
 };
 #endif

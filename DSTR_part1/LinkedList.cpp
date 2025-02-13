@@ -19,10 +19,10 @@ LinkedList::~LinkedList() {
 	}
 }
 
-Article* LinkedList::createArticle(string title, string content, string subject, string date) {
+Article* LinkedList::createArticle(string title, string text, string subject, string date) {
 	Article* newArticle = new Article;
 	newArticle->title = title;
-	newArticle->content = content;
+	newArticle->text = text;
 	newArticle->subject = subject;
 	newArticle->date = date;
 	newArticle->nextaddress = nullptr;
@@ -31,16 +31,38 @@ Article* LinkedList::createArticle(string title, string content, string subject,
 
 void LinkedList::InsertArticle(Article* article) {
 
-	if (head == nullptr) 
+	if (head == nullptr)
 	{
 		head = tail = article;
 	}
-	else 
+	else
 	{
 		tail->nextaddress = article;
 		tail = article;
 	}
 	size++;
+}
+
+void LinkedList::loadToTxt(string filename) {
+	ofstream outFile(filename);
+
+	if (!outFile) {
+		cout << "Error opening file: " << filename << endl;
+		return;
+	}
+
+	Article* current = head;
+	while (current) {
+		outFile << "Title: " << current->title << endl;
+		outFile << "Text: " << current->text << endl;
+		outFile << "Subject: " << current->subject << endl;
+		outFile << "Date: " << current->date << endl;
+		outFile << "---------------------------" << endl;
+		current = current->nextaddress;
+	}
+
+	outFile.close();
+	cout << "Data successfully saved to " << filename << endl;
 }
 
 void LinkedList::loadFromCSV(string filename) {
@@ -54,19 +76,52 @@ void LinkedList::loadFromCSV(string filename) {
 	string line;
 
 
+	// Skip header
+	getline(file, line);
+
 	while (getline(file, line)) {
-		stringstream ss(line);
-		string title, content, subject, date;
+		string title, text, subject, date;
+		string field;
+		bool insideQuote = false;
+		int fieldIndex = 0;
 
-		getline(ss, title, ',');
-		getline(ss, content, ',');
-		getline(ss, subject, ',');
-		getline(ss, date, ',');
+		for (size_t i = 0; i < line.size(); i++) {
+			char c = line[i];
 
-		cout << "Inserting article: " << title << endl;  // Check which articles are being processed
-		InsertArticle(createArticle(title, content, subject, date));
-	
+			if (c == '"') {
+				insideQuote = !insideQuote;  // Toggle insideQuote flag
+			}
+			else if (c == ',' && !insideQuote) {
+				// Assign field to corresponding variable
+				if (fieldIndex == 0) title = field;
+				else if (fieldIndex == 1) text = field;
+				else if (fieldIndex == 2) subject = field;
+				else if (fieldIndex == 3) date = field;
+
+				field.clear();  // Reset field for next value
+				fieldIndex++;  // Move to next column
+			}
+			else {
+				field += c;
+			}
+		}
+
+		// Add last field (date column)
+		if (fieldIndex == 3) {
+			date = field;
+		}
+
+		// Ensure all fields are present before adding to linked list
+		if (!title.empty() && !text.empty() && !subject.empty() && !date.empty()) {
+			cout << "Inserting article: " << title << endl;
+			InsertArticle(createArticle(title, text, subject, date));
+		}
+		else {
+			cout << "Skipping invalid row: missing data" << endl;
+		}
 	}
+
+	loadToTxt("displaytext.txt");
 }
 
 void LinkedList::displayArticles() {
@@ -80,7 +135,7 @@ void LinkedList::displayArticles() {
 	else {
 		while (current) {
 			cout << "Title: " << current->title << endl;
-			cout << "Content: " << current->content << endl;
+			cout << "Text: " << current->text << endl;
 			cout << "Subject: " << current->subject << endl;
 			cout << "Date: " << current->date << endl;
 			current = current->nextaddress;
@@ -103,7 +158,7 @@ void LinkedList::sortByDate() {
 			if (current->date > current->nextaddress->date) {
 				// Swap the data between current article and next article
 				swap(current->title, current->nextaddress->title);
-				swap(current->content, current->nextaddress->content);
+				swap(current->text, current->nextaddress->text);
 				swap(current->subject, current->nextaddress->subject);
 				swap(current->date, current->nextaddress->date);
 				swapped = true;  // Set swapped to true since a swap happened
@@ -118,4 +173,6 @@ int LinkedList::countArticles() {
 	return size;
 }
 
-
+bool LinkedList::isValidRow(const Article& row) {
+	return !(row.title.empty() || row.text.empty() || row.subject.empty() || row.date.empty());
+}
