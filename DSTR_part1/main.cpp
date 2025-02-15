@@ -1,4 +1,8 @@
 #include "DoublyLinkedList.hpp"
+#include "WordFrequencyList.hpp" // Include WordFrequencyList header
+#include "TextAnalyzer.hpp"      // Include TextAnalyzer header
+#include <iostream>
+#include <iomanip>
 
 int main() {
 	DoublyLinkedList trueNewsList;
@@ -20,6 +24,8 @@ int main() {
 	// Search for fake news articles
 	//trueNewsList.searchFakeNews();
 
+	WordFrequencyAnalyzer analyzer;
+	analyzer.analyzeAndDisplay(fakeNewsList, trueNewsList, "Government News", 10);
 
 	return 0;
 }

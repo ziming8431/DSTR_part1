@@ -34,7 +34,10 @@ public:
     //void searchFakeNews();
     bool isValidRow(const Article& row);
     void loadToTxt(string filename);
-
+    string getFakeGovernmentNewsText();
+    bool hasArticle(const Article* article) const;
+    string toLowercase(const string& s);
+    Article* getHead() const { return head; }
 };
 
 #endif

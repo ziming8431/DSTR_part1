@@ -1,7 +1,11 @@
-#include "DoublyLinkedList.hpp"
+#include "DoublyLinkedList.hpp" // Self-include
+#include "WordFrequencyList.hpp" // Include WordFrequencyList header
+#include "TextAnalyzer.hpp"      // Include TextAnalyzer header
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <string>
+#include <algorithm>
 
 // Constructor
 DoublyLinkedList::DoublyLinkedList() {
@@ -163,4 +167,39 @@ void DoublyLinkedList::loadToTxt(string filename) {
 // Check if the row (article) is valid (non-empty fields)
 bool DoublyLinkedList::isValidRow(const Article& row) {
     return !(row.title.empty() || row.text.empty() || row.subject.empty() || row.date.empty());
+}
+
+string DoublyLinkedList::getFakeGovernmentNewsText() {
+    string combinedText = "";
+    Article* current = head;
+    while (current) {
+        if (current->subject == "government") {
+            combinedText += current->text + " ";
+        }
+        current = current->nextaddress;
+    }
+    return combinedText;
+}
+
+
+// Check if article exists in the list
+bool DoublyLinkedList::hasArticle(const Article* target) const {
+    Article* current = head;
+    while (current) {
+        if (current->title == target->title &&
+            current->text == target->text &&
+            current->subject == target->subject &&
+            current->date == target->date) {
+            return true;
+        }
+        current = current->nextaddress;
+    }
+    return false;
+}
+
+// Static lowercase conversion
+string DoublyLinkedList::toLowercase(const string& s) {
+    string result = s;
+    for (char& c : result) c = tolower(c);
+    return result;
 }
