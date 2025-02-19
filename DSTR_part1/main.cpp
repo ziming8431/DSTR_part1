@@ -29,71 +29,68 @@ int main() {
 
         switch (mainChoice) {
         case 1: {
-            bool continueTesting = true;
-            while (continueTesting) {
-                cout << "\nSelect sorting algorithm to test:" << endl;
-                cout << "1. Merge Sort" << endl;
-                cout << "2. Bubble Sort" << endl;
-                cout << "3. Quick Sort" << endl;
-                cout << "Enter your choice: ";
-                int sortChoice;
-                cin >> sortChoice;
-                cin.ignore();
-                if (sortChoice != 1 && sortChoice != 2 && sortChoice != 3) {
-                    cout << "Invalid choice. Please try again." << endl;
-                    continue;
-                }
-                // Clone the original lists so each sort runs on the same unsorted data.
-                DoublyLinkedList* sortedTrue = trueNewsList.clone();
-                DoublyLinkedList* sortedFake = fakeNewsList.clone();
+            // Test Sorting Algorithms
+            cout << "\nSelect sorting algorithm to test:" << endl;
+            cout << "1. Merge Sort" << endl;
+            cout << "2. Bubble Sort" << endl;
+            cout << "3. Quick Sort" << endl;
+            cout << "Enter your choice: ";
+            int sortChoice;
+            cin >> sortChoice;
+            cin.ignore();
 
-                auto start = high_resolution_clock::now();
-                switch (sortChoice) {
-                case 1:
-                    cout << "\nSorting using Merge Sort..." << endl;
-                    sortedTrue->sortByDate();
-                    sortedFake->sortByDate();
-                    break;
-                case 2:
-                    cout << "\nSorting using Bubble Sort..." << endl;
-                    sortedTrue->bubbleSort();
-                    sortedFake->bubbleSort();
-                    break;
-                case 3:
-                    cout << "\nSorting using Quick Sort..." << endl;
-                    sortedTrue->quickSort();
-                    sortedFake->quickSort();
-                    break;
-                }
-                auto end = high_resolution_clock::now();
-                auto duration = duration_cast<milliseconds>(end - start);
-                cout << "\nSorting completed in " << duration.count() << " milliseconds." << endl;
-
-                string fileSuffix;
-                if (sortChoice == 1)
-                    fileSuffix = "merge_sorted";
-                else if (sortChoice == 2)
-                    fileSuffix = "bubble_sorted";
-                else
-                    fileSuffix = "quick_sorted";
-
-                sortedTrue->loadToTxt(fileSuffix + "_true_news.txt");
-                sortedFake->loadToTxt(fileSuffix + "_fake_news.txt");
-
-                delete sortedTrue;
-                delete sortedFake;
-
-                cout << "\nDo you want to test another sorting algorithm? (Y/N): ";
-                char cont;
-                cin >> cont;
-                cin.ignore();
-                if (tolower(cont) != 'y') {
-                    continueTesting = false;
-                }
+            if (sortChoice != 1 && sortChoice != 2 && sortChoice != 3) {
+                cout << "Invalid choice. Returning to main menu.\n";
+                break;
             }
+
+            // Clone the original lists so each sort runs on the same unsorted data.
+            DoublyLinkedList* sortedTrue = trueNewsList.clone();
+            DoublyLinkedList* sortedFake = fakeNewsList.clone();
+
+            auto start = high_resolution_clock::now();
+            switch (sortChoice) {
+            case 1:
+                cout << "\nSorting using Merge Sort..." << endl;
+                sortedTrue->sortByDate();
+                sortedFake->sortByDate();
+                break;
+            case 2:
+                cout << "\nSorting using Bubble Sort..." << endl;
+                sortedTrue->bubbleSort();
+                sortedFake->bubbleSort();
+                break;
+            case 3:
+                cout << "\nSorting using Quick Sort..." << endl;
+                sortedTrue->quickSort();
+                sortedFake->quickSort();
+                break;
+            }
+            auto end = high_resolution_clock::now();
+            auto duration = duration_cast<milliseconds>(end - start);
+            cout << "\nSorting completed in " << duration.count() << " milliseconds." << endl;
+
+            // Determine file names
+            string fileSuffix;
+            if (sortChoice == 1)
+                fileSuffix = "merge_sorted";
+            else if (sortChoice == 2)
+                fileSuffix = "bubble_sorted";
+            else
+                fileSuffix = "quick_sorted";
+
+            // Save results to .txt files
+            sortedTrue->loadToTxt(fileSuffix + "_true_news.txt");
+            sortedFake->loadToTxt(fileSuffix + "_fake_news.txt");
+
+            // Clean up
+            delete sortedTrue;
+            delete sortedFake;
             break;
         }
+
         case 2: {
+            // Search Articles
             cout << "\nSelect dataset to search:" << endl;
             cout << "1. True News" << endl;
             cout << "2. Fake News" << endl;
@@ -112,14 +109,24 @@ int main() {
             }
             break;
         }
+
         case 3: {
+            // Find Frequency Word
             cout << "\n=== Frequency Word Analysis ===" << endl;
+            auto start = high_resolution_clock::now();
+
             WordFrequencyAnalyzer analyzer;
             analyzer.analyzeAndDisplay(fakeNewsList, trueNewsList, "Government News");
+
+            auto end = high_resolution_clock::now();
+            auto duration = duration_cast<milliseconds>(end - start);
+            cout << "\nFrequency word analysis completed in "
+                << duration.count() << " milliseconds." << endl;
             break;
         }
+
         case 4: {
-            // Sub-menu to choose binary vs. linear approach
+            // Print Monthly Fake Political News Percentage
             cout << "\nSelect an approach for printing monthly fake political news percentage:\n";
             cout << "1. Binary Search Approach (requires sorted lists)\n";
             cout << "2. Linear Search Approach\n";
@@ -130,6 +137,8 @@ int main() {
 
             if (subChoice == 1) {
                 // === BINARY SEARCH APPROACH ===
+                auto start = high_resolution_clock::now();
+
                 // 1) Make sure both lists are sorted by date
                 trueNewsList.sortByDate();
                 fakeNewsList.sortByDate();
@@ -137,9 +146,16 @@ int main() {
                 // 2) Call the function that uses binary search
                 DoublyLinkedList::printMonthlyFakePoliticalNewsPercentage2016(trueNewsList, fakeNewsList);
 
+                auto end = high_resolution_clock::now();
+                auto duration = duration_cast<milliseconds>(end - start);
+                cout << "\nBinary search approach completed in "
+                    << duration.count() << " milliseconds." << endl;
+
             }
             else if (subChoice == 2) {
                 // === LINEAR SEARCH APPROACH ===
+                auto start = high_resolution_clock::now();
+
                 // 1) Reset counters
                 DoublyLinkedList::resetMonthCounters();
 
@@ -150,18 +166,23 @@ int main() {
                 fakeNewsList.AnalyseFakeArticles();
 
                 // 4) Display the monthly percentages (ASCII bar chart)
-                //    This can be called on either list, since the counters are static
                 fakeNewsList.DisplayPercentage();
 
+                auto end = high_resolution_clock::now();
+                auto duration = duration_cast<milliseconds>(end - start);
+                cout << "\nLinear search approach completed in "
+                    << duration.count() << " milliseconds." << endl;
             }
             else {
                 cout << "Invalid choice. Returning to main menu.\n";
             }
             break;
         }
+
         case 5:
             exitProgram = true;
             break;
+
         default:
             cout << "Invalid choice. Please try again." << endl;
             break;
