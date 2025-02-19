@@ -119,12 +119,44 @@ int main() {
             break;
         }
         case 4: {
-            cout << "\nPrinting the monthly percentage of fake political news in 2016...\n";
-            // Ensure both lists are sorted by date.
-            trueNewsList.sortByDate();
-            fakeNewsList.sortByDate();
+            // Sub-menu to choose binary vs. linear approach
+            cout << "\nSelect an approach for printing monthly fake political news percentage:\n";
+            cout << "1. Binary Search Approach (requires sorted lists)\n";
+            cout << "2. Linear Search Approach\n";
+            cout << "Enter your choice: ";
+            int subChoice;
+            cin >> subChoice;
+            cin.ignore();
 
-            DoublyLinkedList::printMonthlyFakePoliticalNewsPercentage2016(trueNewsList, fakeNewsList);
+            if (subChoice == 1) {
+                // === BINARY SEARCH APPROACH ===
+                // 1) Make sure both lists are sorted by date
+                trueNewsList.sortByDate();
+                fakeNewsList.sortByDate();
+
+                // 2) Call the function that uses binary search
+                DoublyLinkedList::printMonthlyFakePoliticalNewsPercentage2016(trueNewsList, fakeNewsList);
+
+            }
+            else if (subChoice == 2) {
+                // === LINEAR SEARCH APPROACH ===
+                // 1) Reset counters
+                DoublyLinkedList::resetMonthCounters();
+
+                // 2) Analyze the true news list for "politicsNews" in 2016
+                trueNewsList.AnalyseTrueArticles();
+
+                // 3) Analyze the fake news list for "politics" in 2016
+                fakeNewsList.AnalyseFakeArticles();
+
+                // 4) Display the monthly percentages (ASCII bar chart)
+                //    This can be called on either list, since the counters are static
+                fakeNewsList.DisplayPercentage();
+
+            }
+            else {
+                cout << "Invalid choice. Returning to main menu.\n";
+            }
             break;
         }
         case 5:
