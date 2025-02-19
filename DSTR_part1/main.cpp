@@ -23,9 +23,19 @@ int main() {
 
 	// Search for fake news articles
 	//trueNewsList.searchFakeNews();
+	// Sort by date (year)
+	trueNewsList.sortByDate();
+	fakeNewsList.sortByDate();
 
-	WordFrequencyAnalyzer analyzer;
-	analyzer.analyzeAndDisplay(fakeNewsList, trueNewsList, "Government News", 10);
+	// Display total number of articles
+	cout << "Total True News Articles: " << trueNewsList.countArticles() << endl;
+	cout << "Total Fake News Articles: " << fakeNewsList.countArticles() << endl;
+
+	trueNewsList.loadToTxt("sorted_true_news.txt");
+	fakeNewsList.loadToTxt("sorted_fake_news.txt");
+
+	//WordFrequencyAnalyzer analyzer;
+	//analyzer.analyzeAndDisplay(fakeNewsList, trueNewsList, "Government News");
 
 	return 0;
 }

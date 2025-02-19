@@ -4,35 +4,40 @@
 #include "DoublyLinkedList.hpp"
 #include <string>
 
+using namespace std;
 
+struct WordNode {
+    string word;
+    int count;
+    WordNode* next;
+	WordNode* prev;
+    WordNode(string w, int c) {
+		word = w;
+		count = c;
+		next = nullptr;
+    }
+};
 
 class WordFrequencyAnalyzer {
 private:
-    struct WordNode {
-        std::string word;
-        int count;
-        WordNode* next;
-        WordNode(std::string w, int c) : word(w), count(c), next(nullptr) {}
-    };
 
     WordNode* wordHead = nullptr;
-    static const std::string COMMON_WORDS[];
+	WordNode* wordTail = nullptr;
+    static const string COMMON_WORDS[];
 
     // Helper functions
-    static std::string cleanWord(const std::string& word);
-    bool isCommonWord(const std::string& word) const;
-    void insertOrIncrementWord(const std::string& word);
+    static string cleanWord(const string& word);
+    bool isCommonWord(const string& word) const;
+    void insertOrIncrementWord(const string& word);
     void sortWordsByFrequency();
     void clearWordList();
+	WordNode* findMostFrequentWord();
 
 public:
-    WordFrequencyAnalyzer() = default;
+    WordFrequencyAnalyzer();
     ~WordFrequencyAnalyzer();
 
-    void analyzeAndDisplay(DoublyLinkedList& fakeList,
-        DoublyLinkedList& trueList,
-        const std::string& targetSubject,
-        int topN = 10);
+    void analyzeAndDisplay(DoublyLinkedList& fakeList, DoublyLinkedList& trueList, const string& targetSubject);
 };
 
 #endif

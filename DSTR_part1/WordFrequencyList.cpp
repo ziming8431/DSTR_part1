@@ -5,6 +5,10 @@
 #include <cctype>
 
 using namespace std;
+WordFrequencyAnalyzer::WordFrequencyAnalyzer() {
+    wordHead = nullptr;
+    wordTail = nullptr;
+}
 
 const string WordFrequencyAnalyzer::COMMON_WORDS[] = {
     "the", "to", "of", "and", "a", "in", "that", "s", "is", "for", "it", "on",
@@ -16,7 +20,7 @@ const string WordFrequencyAnalyzer::COMMON_WORDS[] = {
     "above", "below", "between", "through", "during", "before", "after", "out",
     "so", "such", "no", "yes", "up", "down", "just", "more", "most", "some", "any",
     "only", "very", "too", "also", "even", "than", "its", "my", "your", "our", "us",
-    "we", "them", "being", "been", "do", "does", "did", "done", "say", "said", "says", "I"
+    "we", "them", "being", "been", "do", "does", "did", "done", "say", "said", "says", "i", "you", "t"
 };
 
 WordFrequencyAnalyzer::~WordFrequencyAnalyzer() {
@@ -95,10 +99,28 @@ void WordFrequencyAnalyzer::clearWordList() {
     }
 }
 
-void WordFrequencyAnalyzer::analyzeAndDisplay(DoublyLinkedList& fakeList,
-    DoublyLinkedList& trueList,
-    const string& targetSubject,
-    int topN) {
+WordNode* WordFrequencyAnalyzer::findMostFrequentWord() {
+    if (!wordHead) {
+        return nullptr; // Return nullptr if the word list is empty
+    }
+
+    WordNode* mostFrequentWord = wordHead; // Assume the first word is the most frequent initially
+    int maxFrequency = wordHead->count;     // Initialize max frequency with the first word's count
+
+    WordNode* current = wordHead->next; // Start from the second word (if it exists)
+
+    while (current) {
+        if (current->count > maxFrequency) {
+            maxFrequency = current->count;       // Update max frequency if we find a higher count
+            mostFrequentWord = current;         // Update mostFrequentWord to the current word
+        }
+        current = current->next; // Move to the next word
+    }
+
+    return mostFrequentWord; // Return the WordNode with the highest frequency found
+}
+
+void WordFrequencyAnalyzer::analyzeAndDisplay(DoublyLinkedList& fakeList, DoublyLinkedList& trueList, const string& targetSubject) {
     // Process fake news articles
     Article* currentArticle = fakeList.getHead();
     while (currentArticle) {
@@ -116,20 +138,11 @@ void WordFrequencyAnalyzer::analyzeAndDisplay(DoublyLinkedList& fakeList,
                 }
             }
         }
-        currentArticle = currentArticle->nextaddress;
+        currentArticle = currentArticle->next;
     }
 
     // Sort words by frequency
-    sortWordsByFrequency();
-
-    // Display results
-    cout << "\nTop " << topN << " Frequent Words in Fake "
-        << targetSubject << " News:\n";
-    WordNode* current = wordHead;
-    for (int i = 0; i < topN && current; i++) {
-        cout << current->word << ": " << current->count << endl;
-        current = current->next;
-    }
+	cout << "The Most frequent word: " << findMostFrequentWord()->word << endl;
 
     // Clear data for next analysis
     clearWordList();
