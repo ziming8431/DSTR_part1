@@ -3,6 +3,7 @@
 #include <sstream>
 #include <iostream>
 #include <cctype>
+#include <cmath> 
 
 using namespace std;
 WordFrequencyAnalyzer::WordFrequencyAnalyzer() {
@@ -69,27 +70,27 @@ void WordFrequencyAnalyzer::insertOrIncrementWord(const string& word) {
 }
 
 void WordFrequencyAnalyzer::sortWordsByFrequency() {
-    if (!wordHead || !wordHead->next) return;
+    // If the list is empty or has only one element, there's nothing to sort.
+    if (!wordHead || !wordHead->next)
+        return;
 
-    bool swapped;
-    do {
-        swapped = false;
-        WordNode** ptr = &wordHead;
-
-        while (*ptr && (*ptr)->next) {
-            WordNode* a = *ptr;
-            WordNode* b = a->next;
-
-            if (a->count < b->count) {
-                a->next = b->next;
-                b->next = a;
-                *ptr = b;
-                swapped = true;
+    // Selection sort: for each node, find the node with the maximum count
+    // in the remainder of the list and swap data.
+    for (WordNode* current = wordHead; current != nullptr; current = current->next) {
+        WordNode* maxNode = current;
+        for (WordNode* runner = current->next; runner != nullptr; runner = runner->next) {
+            if (runner->count > maxNode->count) {
+                maxNode = runner;
             }
-            ptr = &(*ptr)->next;
         }
-    } while (swapped);
+        // Swap data if a node with a higher count was found.
+        if (maxNode != current) {
+            swap(current->word, maxNode->word);
+            swap(current->count, maxNode->count);
+        }
+    }
 }
+
 
 void WordFrequencyAnalyzer::clearWordList() {
     while (wordHead) {
@@ -121,14 +122,19 @@ WordNode* WordFrequencyAnalyzer::findMostFrequentWord() {
 }
 
 void WordFrequencyAnalyzer::analyzeAndDisplay(DoublyLinkedList& fakeList, DoublyLinkedList& trueList, const string& targetSubject) {
+    cout << "\nStarting word frequency analysis for subject: " << targetSubject << endl;
+    cout << "Processing articles..." << endl;
+
     // Process fake news articles
     Article* currentArticle = fakeList.getHead();
+    int articleCount = 0;
     while (currentArticle) {
         // Check subject match and ensure it's not in true news
         if (fakeList.toLowercase(currentArticle->subject) ==
             fakeList.toLowercase(targetSubject) &&
             !trueList.hasArticle(currentArticle)) {
 
+            articleCount++;
             istringstream iss(currentArticle->text);
             string word;
             while (iss >> word) {
@@ -141,9 +147,28 @@ void WordFrequencyAnalyzer::analyzeAndDisplay(DoublyLinkedList& fakeList, Doubly
         currentArticle = currentArticle->next;
     }
 
-    // Sort words by frequency
-	cout << "The Most frequent word: " << findMostFrequentWord()->word << endl;
+    cout << "Processed " << articleCount << " matching articles." << endl;
+    cout << "Sorting words by frequency..." << endl;
 
-    // Clear data for next analysis
+    // Sort words by frequency (highest count first)
+    sortWordsByFrequency();
+
+    cout << "\n=== Top 20 Frequent Words ===" << endl;
+    WordNode* currentWord = wordHead;
+    int count = 0;
+    while (currentWord != nullptr && count < 20) {
+        cout << currentWord->word << " (" << currentWord->count << ")" << endl;
+        currentWord = currentWord->next;
+        count++;
+    }
+    if (count == 0) {
+        cout << "No words found." << endl;
+    }
+
+    // Display a final message so the user knows the analysis is complete.
+    cout << "\nWord frequency analysis complete." << endl;
+
+    // Clear the word list for the next analysis.
     clearWordList();
 }
+
