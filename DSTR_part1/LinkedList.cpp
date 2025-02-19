@@ -145,7 +145,7 @@ void DoublyLinkedList::loadFromCSV(string filename) {
             cout << "Skipping invalid row" << endl;
         }
     }
-    loadToTxt("sorted_fake_news.txt");
+    loadToTxt("displaytext.txt");
     file.close();
 }
 
