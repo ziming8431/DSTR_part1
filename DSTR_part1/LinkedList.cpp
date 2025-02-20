@@ -5,7 +5,7 @@
 #include <iostream>
 #include <chrono>
 #include <cctype>
-#include <cmath>    // for std::round
+#include <cmath>   
 #include <iomanip>
 
 // ===================== Constructor and Destructor =====================
@@ -361,7 +361,6 @@ void DoublyLinkedList::quickSort() {
 }
 
 // ===================== Search Function =====================
-// ===================== Search Functions =====================
 
 void DoublyLinkedList::searchArticles() {
     string searchType;
@@ -554,9 +553,9 @@ DoublyLinkedList* DoublyLinkedList::clone() const {
 }
 
 // ===================== New Helper Functions for Binary Search Analysis =====================
-// ===================== toArray() and Binary Search =====================
+
 Article** DoublyLinkedList::toArray() const {
-    int n = countArticles(); // now allowed because countArticles() is const
+    int n = countArticles();
     Article** arr = new Article * [n];
     Article* current = head;
     for (int i = 0; i < n; i++) {
@@ -705,132 +704,165 @@ void DoublyLinkedList::printMonthlyFakePoliticalNewsPercentage2016(
 }
 
 
+// ===================== Linear search Functions =====================
+int TrueMonthCounter[12] = { 0 }; //for storing true news for every month
+int FakeMonthCounter[12] = { 0 }; //for storing fake news for every month
 
-// ===================== Define the static arrays =====================
-int TrueMonthCounter[12] = { 0 };
-int FakeMonthCounter[12] = { 0 };
-
-// ===================== Reset counters =====================
-void DoublyLinkedList::resetMonthCounters() {
-    for (int i = 0; i < 12; i++) {
-        TrueMonthCounter[i] = 0;
-        FakeMonthCounter[i] = 0;
-    }
-}
-
-// ===================== AnalyseTrueArticles() =====================
 void DoublyLinkedList::AnalyseTrueArticles() {
-    // We'll scan the entire list for articles from 2016 whose subject is "politicsNews".
-    // For each match, we increment TrueMonthCounter based on the month.
+
     Article* search = head;
-    while (search) {
-        // We'll parse date as strings rather than using parseDate, just like your snippet
-        istringstream iss(search->date);
+    while (search != nullptr) {
+
+        string dateStr = search->date;
+        istringstream iss(dateStr);
+        string categoryStr = search->subject;
+
+
         string month_str, day_with_comma, year_str;
-        if (iss >> month_str >> day_with_comma >> year_str) {
-            // year_str is e.g. "2016"
-            // subject is e.g. "politicsNews"
-            // Check year and subject
-            if (year_str == "2016") {
-                string lowerSubj = toLowercase(search->subject);
-                if (lowerSubj == "politicsnews") {
-                    TrueMonthMatching(month_str);
-                }
+        if (iss >> month_str >> day_with_comma >> year_str) { //if the date column is fitting the format
+            if (year_str == "2016" && categoryStr == "politicsNews") { //if the article is in 2016 and category is politicalNews
+                TrueMonthMatching(month_str);
+                search = search->next; //proceed to the next node
+            }
+            else {
+                search = search->next; //proceed to the next node
             }
         }
-        search = search->next;
+        else {
+            search = search->next; //pcoceed to the next node
+        }
     }
+    DisplayPercentage();
 }
 
-// ===================== TrueMonthMatching() =====================
 void DoublyLinkedList::TrueMonthMatching(const string& month_str) {
-    // Convert the input to lowercase to handle "January"/"Jan"
-    string lowerMonth = toLowercase(month_str);
-
-    if (lowerMonth == "january" || lowerMonth == "jan") { TrueMonthCounter[0]++; }
-    else if (lowerMonth == "february" || lowerMonth == "feb") { TrueMonthCounter[1]++; }
-    else if (lowerMonth == "march" || lowerMonth == "mar") { TrueMonthCounter[2]++; }
-    else if (lowerMonth == "april" || lowerMonth == "apr") { TrueMonthCounter[3]++; }
-    else if (lowerMonth == "may") { TrueMonthCounter[4]++; }
-    else if (lowerMonth == "june" || lowerMonth == "jun") { TrueMonthCounter[5]++; }
-    else if (lowerMonth == "july" || lowerMonth == "jul") { TrueMonthCounter[6]++; }
-    else if (lowerMonth == "august" || lowerMonth == "aug") { TrueMonthCounter[7]++; }
-    else if (lowerMonth == "september" || lowerMonth == "sep" || lowerMonth == "sept") {
-        TrueMonthCounter[8]++;
+    if (month_str == "January" || month_str == "Jan") {
+        TrueMonthCounter[0] += 1; //indicates January counter, 0+1
     }
-    else if (lowerMonth == "october" || lowerMonth == "oct") { TrueMonthCounter[9]++; }
-    else if (lowerMonth == "november" || lowerMonth == "nov") { TrueMonthCounter[10]++; }
-    else if (lowerMonth == "december" || lowerMonth == "dec") { TrueMonthCounter[11]++; }
+    else if (month_str == "February" || month_str == "Feb") {
+        TrueMonthCounter[1] += 1;
+    }
+    else if (month_str == "March" || month_str == "Mar") {
+        TrueMonthCounter[2] += 1;
+    }
+    else if (month_str == "April" || month_str == "Apr") {
+        TrueMonthCounter[3] += 1;
+    }
+    else if (month_str == "May") {
+        TrueMonthCounter[4] += 1;
+    }
+    else if (month_str == "June" || month_str == "Jun") {
+        TrueMonthCounter[5] += 1;
+    }
+    else if (month_str == "July" || month_str == "Jul") {
+        TrueMonthCounter[6] += 1;
+    }
+    else if (month_str == "August" || month_str == "Aug") {
+        TrueMonthCounter[7] += 1;
+    }
+    else if (month_str == "September" || month_str == "Sep") {
+        TrueMonthCounter[8] += 1;
+    }
+    else if (month_str == "October" || month_str == "Oct") {
+        TrueMonthCounter[9] += 1;
+    }
+    else if (month_str == "November" || month_str == "Nov") {
+        TrueMonthCounter[10] += 1;
+    }
+    else if (month_str == "December" || month_str == "Dec") {
+        TrueMonthCounter[11] += 1;
+    }
+
 }
 
-// ===================== AnalyseFakeArticles() =====================
+
 void DoublyLinkedList::AnalyseFakeArticles() {
-    // We'll scan for articles from 2016 whose subject is "politics"
+
     Article* search = head;
-    while (search) {
-        istringstream iss(search->date);
+    while (search != nullptr) {
+        string dateStr = search->date;
+        istringstream iss(dateStr);
+        string categoryStr = search->subject;
+
         string monthVal, dayVal, yearVal;
-        if (iss >> monthVal >> dayVal >> yearVal) {
-            if (yearVal == "2016") {
-                string lowerSubj = toLowercase(search->subject);
-                if (lowerSubj == "politics") {
-                    FakeMonthMatching(monthVal);
-                }
+        if (iss >> monthVal >> dayVal >> yearVal) { //if the date column is fitting the format;
+            if (yearVal == "2016" && categoryStr == "politics") { //if the article is in 2016 and category is politics
+                FakeMonthMatching(monthVal);
+                search = search->next; //proceed to the next node
+            }
+            else {
+                search = search->next; //proceed to the next node
             }
         }
-        search = search->next;
-    }
-}
-
-// ===================== FakeMonthMatching() =====================
-void DoublyLinkedList::FakeMonthMatching(const string& month_str) {
-    // Convert to lowercase to unify matching
-    string lowerMonth = toLowercase(month_str);
-
-    if (lowerMonth == "january" || lowerMonth == "jan") { FakeMonthCounter[0]++; }
-    else if (lowerMonth == "february" || lowerMonth == "feb") { FakeMonthCounter[1]++; }
-    else if (lowerMonth == "march" || lowerMonth == "mar") { FakeMonthCounter[2]++; }
-    else if (lowerMonth == "april" || lowerMonth == "apr") { FakeMonthCounter[3]++; }
-    else if (lowerMonth == "may") { FakeMonthCounter[4]++; }
-    else if (lowerMonth == "june" || lowerMonth == "jun") { FakeMonthCounter[5]++; }
-    else if (lowerMonth == "july" || lowerMonth == "jul") { FakeMonthCounter[6]++; }
-    else if (lowerMonth == "august" || lowerMonth == "aug") { FakeMonthCounter[7]++; }
-    else if (lowerMonth == "september" || lowerMonth == "sep" || lowerMonth == "sept") {
-        FakeMonthCounter[8]++;
-    }
-    else if (lowerMonth == "october" || lowerMonth == "oct") { FakeMonthCounter[9]++; }
-    else if (lowerMonth == "november" || lowerMonth == "nov") { FakeMonthCounter[10]++; }
-    else if (lowerMonth == "december" || lowerMonth == "dec") { FakeMonthCounter[11]++; }
-}
-
-// ===================== DisplayPercentage() =====================
-void DoublyLinkedList::DisplayPercentage() {
-    cout << "\n=== Percentage of Fake Political News Articles in 2016 (Linear Search) ===\n" << endl;
-
-    static const string months[] = {
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    };
-
-    for (int i = 0; i < 12; i++) {
-        int total = TrueMonthCounter[i] + FakeMonthCounter[i];
-        double monthlyPercentage = 0.0;
-        if (total > 0) {
-            monthlyPercentage = (FakeMonthCounter[i] * 100.0) / total;
+        else {
+            search = search->next; //pcoceed to the next node
         }
+    }
+}
 
-        // Print month
+void DoublyLinkedList::FakeMonthMatching(const string& month_str) {
+    if (month_str == "January" || month_str == "Jan") {
+        FakeMonthCounter[0] += 1; //indicates January counter, 0+1
+    }
+    else if (month_str == "February" || month_str == "Feb") {
+        FakeMonthCounter[1] += 1;
+    }
+    else if (month_str == "March" || month_str == "Mar") {
+        FakeMonthCounter[2] += 1;
+    }
+    else if (month_str == "April" || month_str == "Apr") {
+        FakeMonthCounter[3] += 1;
+    }
+    else if (month_str == "May") {
+        FakeMonthCounter[4] += 1;
+    }
+    else if (month_str == "June" || month_str == "Jun") {
+        FakeMonthCounter[5] += 1;
+    }
+    else if (month_str == "July" || month_str == "Jul") {
+        FakeMonthCounter[6] += 1;
+    }
+    else if (month_str == "August" || month_str == "Aug") {
+        FakeMonthCounter[7] += 1;
+    }
+    else if (month_str == "September" || month_str == "Sep") {
+        FakeMonthCounter[8] += 1;
+    }
+    else if (month_str == "October" || month_str == "Oct") {
+        FakeMonthCounter[9] += 1;
+    }
+    else if (month_str == "November" || month_str == "Nov") {
+        FakeMonthCounter[10] += 1;
+    }
+    else if (month_str == "December" || month_str == "Dec") {
+        FakeMonthCounter[11] += 1;
+    }
+}
+
+void DoublyLinkedList::DisplayPercentage() {
+    // Display header
+
+    cout << "\nPercentage of Fake Political News Articles in 2016\n" << endl;
+
+    // Display monthly percentages
+    const string months[] = { "January", "February", "March", "April", "May", "June",
+                               "July", "August", "September", "October", "November", "December" };
+
+    for (int i = 0; i < 12; i++)
+    {
+        double monthlyTotal = (TrueMonthCounter[i] + FakeMonthCounter[i]); //calculate the total news for each month
+        double monthlyPercentage = (FakeMonthCounter[i] / monthlyTotal) * 100;  //find out the percentage of fake news in each month 
+
         cout << left << setw(10) << months[i] << " | ";
 
-        // Print stars
-        int stars = static_cast<int>(monthlyPercentage + 0.5); // round
+        // Print stars (each star represents roughly 1%)
+        int stars = static_cast<int>(monthlyPercentage);
         for (int j = 0; j < stars; j++) {
             cout << "*";
         }
 
-        // Print percentage with one decimal place
-        cout << " " << fixed << setprecision(1) << monthlyPercentage << "%\n";
+        // Print percentages 
+        cout << " " << fixed << setprecision(1) << monthlyPercentage << "% \n";
     }
-
-    cout << "\nNote: Each '*' represents approximately 1% of fake political news.\n" << endl;
+    cout << "\nNote: Each '*' represents approximately 1% of news articles that were fake political news.\n" << endl;
 }

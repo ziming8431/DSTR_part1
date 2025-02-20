@@ -59,7 +59,6 @@ void WordFrequencyAnalyzer::insertOrIncrementWord(const string& word) {
         current = current->next;
     }
 
-    // Word not found - insert new node
     WordNode* newNode = new WordNode(word, 1);
     if (prev) {
         prev->next = newNode;
@@ -75,7 +74,6 @@ void WordFrequencyAnalyzer::sortWordsByFrequency() {
         return;
 
     // Selection sort: for each node, find the node with the maximum count
-    // in the remainder of the list and swap data.
     for (WordNode* current = wordHead; current != nullptr; current = current->next) {
         WordNode* maxNode = current;
         for (WordNode* runner = current->next; runner != nullptr; runner = runner->next) {
@@ -102,23 +100,23 @@ void WordFrequencyAnalyzer::clearWordList() {
 
 WordNode* WordFrequencyAnalyzer::findMostFrequentWord() {
     if (!wordHead) {
-        return nullptr; // Return nullptr if the word list is empty
+        return nullptr;
     }
 
-    WordNode* mostFrequentWord = wordHead; // Assume the first word is the most frequent initially
-    int maxFrequency = wordHead->count;     // Initialize max frequency with the first word's count
+    WordNode* mostFrequentWord = wordHead; 
+    int maxFrequency = wordHead->count;     
 
-    WordNode* current = wordHead->next; // Start from the second word (if it exists)
+    WordNode* current = wordHead->next; 
 
     while (current) {
         if (current->count > maxFrequency) {
-            maxFrequency = current->count;       // Update max frequency if we find a higher count
-            mostFrequentWord = current;         // Update mostFrequentWord to the current word
+            maxFrequency = current->count;       
+            mostFrequentWord = current;         
         }
-        current = current->next; // Move to the next word
+        current = current->next; 
     }
 
-    return mostFrequentWord; // Return the WordNode with the highest frequency found
+    return mostFrequentWord;
 }
 
 void WordFrequencyAnalyzer::analyzeAndDisplay(DoublyLinkedList& fakeList, DoublyLinkedList& trueList, const string& targetSubject) {
@@ -165,10 +163,8 @@ void WordFrequencyAnalyzer::analyzeAndDisplay(DoublyLinkedList& fakeList, Doubly
         cout << "No words found." << endl;
     }
 
-    // Display a final message so the user knows the analysis is complete.
     cout << "\nWord frequency analysis complete." << endl;
 
-    // Clear the word list for the next analysis.
     clearWordList();
 }
 

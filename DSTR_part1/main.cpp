@@ -25,7 +25,7 @@ int main() {
         cout << "Enter your choice: ";
         int mainChoice;
         cin >> mainChoice;
-        cin.ignore(); // clear newline
+        cin.ignore();
 
         switch (mainChoice) {
         case 1: {
@@ -44,7 +44,6 @@ int main() {
                 break;
             }
 
-            // Clone the original lists so each sort runs on the same unsorted data.
             DoublyLinkedList* sortedTrue = trueNewsList.clone();
             DoublyLinkedList* sortedFake = fakeNewsList.clone();
 
@@ -70,7 +69,6 @@ int main() {
             auto duration = duration_cast<milliseconds>(end - start);
             cout << "\nSorting completed in " << duration.count() << " milliseconds." << endl;
 
-            // Determine file names
             string fileSuffix;
             if (sortChoice == 1)
                 fileSuffix = "merge_sorted";
@@ -79,11 +77,10 @@ int main() {
             else
                 fileSuffix = "quick_sorted";
 
-            // Save results to .txt files
+            // Save results to .txt files based on the sorting algorithm
             sortedTrue->loadToTxt(fileSuffix + "_true_news.txt");
             sortedFake->loadToTxt(fileSuffix + "_fake_news.txt");
 
-            // Clean up
             delete sortedTrue;
             delete sortedFake;
             break;
@@ -156,17 +153,8 @@ int main() {
                 // === LINEAR SEARCH APPROACH ===
                 auto start = high_resolution_clock::now();
 
-                // 1) Reset counters
-                DoublyLinkedList::resetMonthCounters();
-
-                // 2) Analyze the true news list for "politicsNews" in 2016
-                trueNewsList.AnalyseTrueArticles();
-
-                // 3) Analyze the fake news list for "politics" in 2016
                 fakeNewsList.AnalyseFakeArticles();
-
-                // 4) Display the monthly percentages (ASCII bar chart)
-                fakeNewsList.DisplayPercentage();
+                trueNewsList.AnalyseTrueArticles();
 
                 auto end = high_resolution_clock::now();
                 auto duration = duration_cast<milliseconds>(end - start);

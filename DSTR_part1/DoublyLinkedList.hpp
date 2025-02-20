@@ -14,7 +14,7 @@ struct Article {
     string title;
     string text;
     string subject;
-    string date;   // e.g., "November 5, 2017"
+    string date;   // "November 5, 2017"
     int year;      // Parsed year
     int month;     // Parsed month
     Article* next;
@@ -96,30 +96,18 @@ public:
     DoublyLinkedList* clone() const;
 
     // Functions for political news analysis
-    static double calculatePoliticalFakePercentage2016(const DoublyLinkedList& trueList,
-        const DoublyLinkedList& fakeList);
-    static void printMonthlyFakePoliticalNewsPercentage2016(const DoublyLinkedList& trueList,
-        const DoublyLinkedList& fakeList);
+    static double calculatePoliticalFakePercentage2016(const DoublyLinkedList& trueList, const DoublyLinkedList& fakeList);
+    static void printMonthlyFakePoliticalNewsPercentage2016(const DoublyLinkedList& trueList, const DoublyLinkedList& fakeList);
 
 
 
     // ======= NEW: Linear-Search-based analysis =======
-    // Resets counters to 0
-    static void resetMonthCounters();
-
-    // Count how many "politicsNews" articles from 2016 are in each month
     void AnalyseTrueArticles();
-    // Count how many "politics" articles from 2016 are in each month
-    void AnalyseFakeArticles();
-
-    // Helpers for counting months
     void TrueMonthMatching(const string& month_str);
+    void AnalyseFakeArticles();
     void FakeMonthMatching(const string& month_str);
-
-    // Print the monthly bar chart (using linear counters)
     void DisplayPercentage();
 
-    // Accessor
     Article* getHead() const { return head; }
 };
 
