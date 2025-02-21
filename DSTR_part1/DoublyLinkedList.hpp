@@ -75,13 +75,13 @@ public:
     string getFakeGovernmentNewsText();
 
     // Sorting and counting.
-    void MergeSort(size_t& extraSapce);        // Merge Sort
+    void MergeSort();        // Merge Sort
     int countArticles() const; // <--- now const
 
     // Additional sorts.
 
-	void bubbleSort(size_t& extraSapce);
-    void quickSort(size_t& extraSapce);
+	void bubbleSort();
+    void quickSort();
     void swapNodes(Article* a, Article* b);
 
 
@@ -100,8 +100,6 @@ public:
     void DisplayPercentage();
 
     Article* getHead() const { return head; }
-
-    size_t calculateMemoryUsage() const;  // Memory in bytes
 };
 
 #endif

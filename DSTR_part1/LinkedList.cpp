@@ -278,12 +278,10 @@ Article* DoublyLinkedList::mergeSortIterative(Article* head) {
     return sortedHead;
 }
 
-void DoublyLinkedList::MergeSort(size_t& extraSpace) {
+void DoublyLinkedList::MergeSort() {
     if (!head || !head->next) {
-        extraSpace = 0;
         return;
     }
-    extraSpace = sizeof(Article);  // Dummy node in mergeLists
     head = mergeSortIterative(head);
     Article* temp = head;
     while (temp->next) temp = temp->next;
@@ -324,15 +322,12 @@ void DoublyLinkedList::swapNodes(Article* a, Article* b) {
         b->prev = aPrev;
     }
     else {
-        // Handle non-adjacent nodes (simplified for adjacent-only bubble sort)
-        // For bubble sort, we only swap adjacent nodes, so this case won't occur
         return;
     }
 }
 
-void DoublyLinkedList::bubbleSort(size_t& extraSpace) {
+void DoublyLinkedList::bubbleSort() {
     if (!head || !head->next) {
-		extraSpace = 0;
         return;
     } 
 
@@ -384,12 +379,11 @@ void DoublyLinkedList::quickSortRec(Article* low, Article* high) {
     }
 }
 
-void DoublyLinkedList::quickSort(size_t& extraSpace) {
+void DoublyLinkedList::quickSort() {
     if (!head || !head->next) {
-        extraSpace = 0;
         return;
     }
-    extraSpace = static_cast<size_t>(log2(size)) * 50; 
+	cout << "Sorting using Quick Sort..." << endl;
     quickSortRec(head, tail);
 }
 
@@ -748,17 +742,3 @@ void DoublyLinkedList::DisplayPercentage() {
     cout << "\nNote: Each '*' represents approximately 1% of news articles that were fake political news.\n" << endl;
 }
 
-// calculate memory usage
-size_t DoublyLinkedList::calculateMemoryUsage() const {
-    size_t nodeSize = sizeof(Article);  // Base size of struct (includes pointers)
-    // Approximate string sizes (average lengths based on typical data)
-    size_t avgTitleSize = 50;      // bytes
-    size_t avgTextSize = 200;      // bytes
-    size_t avgSubjectSize = 20;    // bytes
-    size_t avgDateSize = 20;       // bytes
-    size_t totalStringSize = avgTitleSize + avgTextSize + avgSubjectSize + avgDateSize;
-
-    // Total memory per node = struct size + string data
-    size_t memoryPerNode = nodeSize + totalStringSize;
-    return memoryPerNode * size;  // Total memory for all nodes
-}
