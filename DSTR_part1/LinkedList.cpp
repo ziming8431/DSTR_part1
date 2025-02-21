@@ -169,6 +169,20 @@ void DoublyLinkedList::loadToTxt(string filename) {
     cout << "Data saved to " << filename << endl;
 }
 
+void DoublyLinkedList::displayArticles() const {
+    Article* current = head;
+    const size_t maxTitleLength = 150;  // Truncate titles longer than 150 characters
+    while (current) {
+        string displayTitle = current->title;
+        if (displayTitle.length() > maxTitleLength) {
+            displayTitle = displayTitle.substr(0, maxTitleLength) + "...";
+        }
+        cout << "Year: " << current->year << "\n";
+        cout << "Title: " << displayTitle << "\n";
+        cout << "---------------------------\n";
+        current = current->next;
+    }
+}
 // ===================== Utility Functions =====================
 bool DoublyLinkedList::isValidRow(const Article& article) {
     if (article.title.empty() || article.text.empty() || article.subject.empty() || article.date.empty())
@@ -332,7 +346,7 @@ void DoublyLinkedList::bubbleSort() {
     } 
 
     bool swapped;
-    Article* end = nullptr; // Marks the end of the unsorted portion
+    Article* end = nullptr;
 
     do {
         swapped = false;

@@ -26,6 +26,7 @@ private:
     Article* tail;
     int size;
 
+    
     // Merge sort helper functions (iterative, bottom-up).
     Article* mergeSortIterative(Article* head);
     Article* split(Article* start, int step);
@@ -57,6 +58,7 @@ public:
     DoublyLinkedList();
     ~DoublyLinkedList();
 
+    void displayArticles() const;
     // Article creation and insertion.
     Article* createArticle(string title, string text, string subject, string date);
     void InsertArticle(Article* article);

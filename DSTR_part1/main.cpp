@@ -74,6 +74,11 @@ int main() {
             cout << "\nSorting completed in " << duration.count() << " milliseconds." << endl;
             cout << "Article Count After Sorting: " << countAfterTrue + countAfterFake << "\n";
 
+            cout << "\nSorted True News Articles:\n";
+            sortedTrue->displayArticles();
+            cout << "\nSorted Fake News Articles:\n";
+            sortedFake->displayArticles();
+
             string fileSuffix;
             if (sortChoice == 1)
                 fileSuffix = "merge_sorted";
