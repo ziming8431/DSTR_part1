@@ -278,13 +278,15 @@ Article* DoublyLinkedList::mergeSortIterative(Article* head) {
     return sortedHead;
 }
 
-void DoublyLinkedList::sortByDate() {
-    if (!head || !head->next)
+void DoublyLinkedList::MergeSort(size_t& extraSpace) {
+    if (!head || !head->next) {
+        extraSpace = 0;
         return;
+    }
+    extraSpace = sizeof(Article);  // Dummy node in mergeLists
     head = mergeSortIterative(head);
     Article* temp = head;
-    while (temp->next)
-        temp = temp->next;
+    while (temp->next) temp = temp->next;
     tail = temp;
 }
 
@@ -328,8 +330,11 @@ void DoublyLinkedList::swapNodes(Article* a, Article* b) {
     }
 }
 
-void DoublyLinkedList::bubbleSort() {
-    if (!head || !head->next) return;
+void DoublyLinkedList::bubbleSort(size_t& extraSpace) {
+    if (!head || !head->next) {
+		extraSpace = 0;
+        return;
+    } 
 
     bool swapped;
     Article* end = nullptr; // Marks the end of the unsorted portion
@@ -379,10 +384,13 @@ void DoublyLinkedList::quickSortRec(Article* low, Article* high) {
     }
 }
 
-void DoublyLinkedList::quickSort() {
-    cout << "Starting Quick Sort..." << endl;
+void DoublyLinkedList::quickSort(size_t& extraSpace) {
+    if (!head || !head->next) {
+        extraSpace = 0;
+        return;
+    }
+    extraSpace = static_cast<size_t>(log2(size)) * 50; 
     quickSortRec(head, tail);
-    cout << "Quick Sort completed." << endl;
 }
 
 // ===================== Search Function =====================
@@ -738,4 +746,19 @@ void DoublyLinkedList::DisplayPercentage() {
         cout << " " << fixed << setprecision(1) << monthlyPercentage << "% \n";
     }
     cout << "\nNote: Each '*' represents approximately 1% of news articles that were fake political news.\n" << endl;
+}
+
+// calculate memory usage
+size_t DoublyLinkedList::calculateMemoryUsage() const {
+    size_t nodeSize = sizeof(Article);  // Base size of struct (includes pointers)
+    // Approximate string sizes (average lengths based on typical data)
+    size_t avgTitleSize = 50;      // bytes
+    size_t avgTextSize = 200;      // bytes
+    size_t avgSubjectSize = 20;    // bytes
+    size_t avgDateSize = 20;       // bytes
+    size_t totalStringSize = avgTitleSize + avgTextSize + avgSubjectSize + avgDateSize;
+
+    // Total memory per node = struct size + string data
+    size_t memoryPerNode = nodeSize + totalStringSize;
+    return memoryPerNode * size;  // Total memory for all nodes
 }

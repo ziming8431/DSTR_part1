@@ -10,11 +10,11 @@ struct WordNode {
     string word;
     int count;
     WordNode* next;
-	WordNode* prev;
+    WordNode* prev;
     WordNode(string w, int c) {
-		word = w;
-		count = c;
-		next = nullptr;
+        word = w;
+        count = c;
+        next = nullptr;
     }
 };
 
@@ -22,7 +22,7 @@ class WordFrequencyAnalyzer {
 private:
 
     WordNode* wordHead = nullptr;
-	WordNode* wordTail = nullptr;
+    WordNode* wordTail = nullptr;
     static const string COMMON_WORDS[];
 
     // Helper functions
@@ -31,7 +31,7 @@ private:
     void insertOrIncrementWord(const string& word);
     void sortWordsByFrequency();
     void clearWordList();
-	WordNode* findMostFrequentWord();
+    WordNode* findMostFrequentWord();
 
 public:
     WordFrequencyAnalyzer();

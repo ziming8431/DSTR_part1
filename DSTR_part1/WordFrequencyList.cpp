@@ -1,5 +1,5 @@
 #include "WordFrequencyList.hpp"
-
+#include "DoublyLinkedList.hpp"
 #include <sstream>
 #include <iostream>
 #include <cctype>
@@ -103,17 +103,17 @@ WordNode* WordFrequencyAnalyzer::findMostFrequentWord() {
         return nullptr;
     }
 
-    WordNode* mostFrequentWord = wordHead; 
-    int maxFrequency = wordHead->count;     
+    WordNode* mostFrequentWord = wordHead;
+    int maxFrequency = wordHead->count;
 
-    WordNode* current = wordHead->next; 
+    WordNode* current = wordHead->next;
 
     while (current) {
         if (current->count > maxFrequency) {
-            maxFrequency = current->count;       
-            mostFrequentWord = current;         
+            maxFrequency = current->count;
+            mostFrequentWord = current;
         }
-        current = current->next; 
+        current = current->next;
     }
 
     return mostFrequentWord;
@@ -167,4 +167,3 @@ void WordFrequencyAnalyzer::analyzeAndDisplay(DoublyLinkedList& fakeList, Doubly
 
     clearWordList();
 }
-
