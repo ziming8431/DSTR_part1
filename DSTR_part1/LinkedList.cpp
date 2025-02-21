@@ -173,8 +173,6 @@ void DoublyLinkedList::loadToTxt(string filename) {
 bool DoublyLinkedList::isValidRow(const Article& article) {
     if (article.title.empty() || article.text.empty() || article.subject.empty() || article.date.empty())
         return false;
-    regex datePattern(R"(^(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)(\.?)\s\d{1,2},\s\d{4}$)");
-    return regex_match(article.date, datePattern);
 }
 
 string DoublyLinkedList::getFakeGovernmentNewsText() {
@@ -304,32 +302,59 @@ void DoublyLinkedList::swapArticleData(Article* a, Article* b) {
     swap(a->month, b->month);
 }
 
+void DoublyLinkedList::swapNodes(Article* a, Article* b) {
+    if (a == b || !a || !b) return;
+
+    // Handle adjacent nodes
+    if (a->next == b) {
+        Article* aPrev = a->prev;
+        Article* bNext = b->next;
+
+        if (aPrev) aPrev->next = b;
+        else head = b;
+
+        if (bNext) bNext->prev = a;
+        else tail = a;
+
+        b->next = a;
+        a->prev = b;
+        a->next = bNext;
+        b->prev = aPrev;
+    }
+    else {
+        // Handle non-adjacent nodes (simplified for adjacent-only bubble sort)
+        // For bubble sort, we only swap adjacent nodes, so this case won't occur
+        return;
+    }
+}
+
 void DoublyLinkedList::bubbleSort() {
-    cout << "Starting Bubble Sort..." << endl;
-    if (!head) return;
+    if (!head || !head->next) return;
+
     bool swapped;
-    int pass = 0;
+    Article* end = nullptr; // Marks the end of the unsorted portion
+
     do {
         swapped = false;
-        pass++;
-        cout << "Pass " << pass << "..." << endl;
         Article* current = head;
-        while (current && current->next) {
+
+        while (current->next != end) {
             if (!compareArticles(current, current->next)) {
-                cout << "Swapping articles: \"" << current->title
-                    << "\" with \"" << current->next->title << "\"" << endl;
-                swapArticleData(current, current->next);
+                swapNodes(current, current->next);
                 swapped = true;
+                // After swapping, current->next is the new "current" position
+                Article* temp = current;
+                current = current->prev; // Move back to the swapped node
+                if (!current->prev) head = current; // Update head if necessary
+                if (!current->next->next) tail = current->next; // Update tail if necessary
             }
             current = current->next;
         }
+        end = current; // After this pass, largest element is at 'current'
     } while (swapped);
-    Article* temp = head;
-    while (temp->next)
-        temp = temp->next;
-    tail = temp;
-    cout << "Bubble Sort completed in " << pass << " passes." << endl;
 }
+
+
 
 // ===================== Quick Sort =====================
 Article* DoublyLinkedList::partition(Article* low, Article* high) {
@@ -551,158 +576,6 @@ DoublyLinkedList* DoublyLinkedList::clone() const {
     }
     return newList;
 }
-
-// ===================== New Helper Functions for Binary Search Analysis =====================
-
-Article** DoublyLinkedList::toArray() const {
-    int n = countArticles();
-    Article** arr = new Article * [n];
-    Article* current = head;
-    for (int i = 0; i < n; i++) {
-        arr[i] = current;
-        current = current->next;
-    }
-    return arr;
-}
-
-int DoublyLinkedList::lowerBound(Article** arr, int n, int targetYear) {
-    int low = 0, high = n;
-    while (low < high) {
-        int mid = low + (high - low) / 2;
-        if (arr[mid]->year < targetYear) {
-            low = mid + 1;
-        }
-        else {
-            high = mid;
-        }
-    }
-    return low;
-}
-
-int DoublyLinkedList::upperBound(Article** arr, int n, int targetYear) {
-    int low = 0, high = n;
-    while (low < high) {
-        int mid = low + (high - low) / 2;
-        if (arr[mid]->year <= targetYear) {
-            low = mid + 1;
-        }
-        else {
-            high = mid;
-        }
-    }
-    return low;
-}
-
-// ===================== calculatePoliticalFakePercentage2016() =====================
-double DoublyLinkedList::calculatePoliticalFakePercentage2016(const DoublyLinkedList& trueList,
-    const DoublyLinkedList& fakeList) {
-    // Both lists must be sorted by date for the binary search to be valid
-    int trueSize = trueList.countArticles();
-    int fakeSize = fakeList.countArticles();
-
-    Article** trueArr = trueList.toArray();
-    Article** fakeArr = fakeList.toArray();
-
-    // range of articles from 2016
-    int lbTrue = lowerBound(trueArr, trueSize, 2016);
-    int ubTrue = upperBound(trueArr, trueSize, 2016);
-    int lbFake = lowerBound(fakeArr, fakeSize, 2016);
-    int ubFake = upperBound(fakeArr, fakeSize, 2016);
-
-    int politicalTrueCount = 0;
-    for (int i = lbTrue; i < ubTrue; i++) {
-        string subj = toLowercase(trueArr[i]->subject);
-        if (subj == "politicsnews") {
-            politicalTrueCount++;
-        }
-    }
-    int politicalFakeCount = 0;
-    for (int i = lbFake; i < ubFake; i++) {
-        string subj = toLowercase(fakeArr[i]->subject);
-        if (subj == "politics") {
-            politicalFakeCount++;
-        }
-    }
-
-    int totalPolitical = politicalTrueCount + politicalFakeCount;
-    double percentage = 0.0;
-    if (totalPolitical > 0) {
-        percentage = (politicalFakeCount * 100.0) / totalPolitical;
-    }
-
-    delete[] trueArr;
-    delete[] fakeArr;
-    return percentage;
-}
-
-// ===================== printMonthlyFakePoliticalNewsPercentage2016() =====================
-void DoublyLinkedList::printMonthlyFakePoliticalNewsPercentage2016(
-    const DoublyLinkedList& trueList,
-    const DoublyLinkedList& fakeList
-) {
-    // We'll track monthly totals for 2016:
-    int monthlyTotal[12] = { 0 };
-    int monthlyFake[12] = { 0 };
-
-    // 1) Traverse True List (subject == "politicsNews")
-    Article* cur = trueList.head;
-    while (cur) {
-        if (cur->year == 2016) {
-            string subj = toLowercase(cur->subject);
-            if (subj == "politicsnews") {
-                int m = cur->month;
-                if (m >= 1 && m <= 12) {
-                    monthlyTotal[m - 1]++;
-                }
-            }
-        }
-        cur = cur->next;
-    }
-
-    // 2) Traverse Fake List (subject == "politics")
-    cur = fakeList.head;
-    while (cur) {
-        if (cur->year == 2016) {
-            string subj = toLowercase(cur->subject);
-            if (subj == "politics") {
-                int m = cur->month;
-                if (m >= 1 && m <= 12) {
-                    monthlyTotal[m - 1]++;
-                    monthlyFake[m - 1]++;
-                }
-            }
-        }
-        cur = cur->next;
-    }
-
-    static const string MONTHS[12] = {
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    };
-
-    cout << "\nPercentage of Fake Political News Articles in 2016\n\n";
-    for (int i = 0; i < 12; i++) {
-        int total = monthlyTotal[i];
-        int fake = monthlyFake[i];
-
-        double percentage = 0.0;
-        if (total > 0) {
-            percentage = (fake * 100.0) / total;
-        }
-
-        // Number of '*' = integer rounding of the percentage
-        int starCount = static_cast<int>(std::round(percentage));
-        string stars(starCount, '*');
-
-        // Print line with one decimal place
-        cout << left << setw(10) << MONTHS[i] << " | "
-            << stars << " "
-            << fixed << setprecision(1) << percentage << "%" << endl;
-    }
-
-    cout << "\nNote: Each '*' represents 1% of fake political news articles.\n";
-}
-
 
 // ===================== Linear search Functions =====================
 int TrueMonthCounter[12] = { 0 }; //for storing true news for every month

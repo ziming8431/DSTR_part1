@@ -4,7 +4,6 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <regex>
 #include <algorithm>
 
 using namespace std;
@@ -51,14 +50,8 @@ private:
     void searchBySubject(const string& subject);
     void searchByKeywordInTitle(const string& keyword);
     void searchByKeywordInText(const string& keyword);
-    void displaySearchResults(Article** results, int resultCount,
-        const string& searchType, const string& searchTerm);
+    void displaySearchResults(Article** results, int resultCount, const string& searchType, const string& searchTerm);
     static bool containsIgnoreCase(const string& source, const string& search);
-
-    // ======= Helpers for arrays and binary search =======
-    Article** toArray() const;
-    static int lowerBound(Article** arr, int n, int targetYear);
-    static int upperBound(Article** arr, int n, int targetYear);
 
 public:
     DoublyLinkedList();
@@ -88,17 +81,14 @@ public:
     // Additional sorts.
     void bubbleSort();
     void quickSort();
+	void swapNodes(Article* a, Article* b);
+
 
     // Search function (menu-based).
     void searchArticles();
 
     // Clone the list (deep copy).
     DoublyLinkedList* clone() const;
-
-    // Functions for political news analysis
-    static double calculatePoliticalFakePercentage2016(const DoublyLinkedList& trueList, const DoublyLinkedList& fakeList);
-    static void printMonthlyFakePoliticalNewsPercentage2016(const DoublyLinkedList& trueList, const DoublyLinkedList& fakeList);
-
 
 
     // ======= NEW: Linear-Search-based analysis =======

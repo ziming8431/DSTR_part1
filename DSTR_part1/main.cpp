@@ -124,46 +124,15 @@ int main() {
 
         case 4: {
             // Print Monthly Fake Political News Percentage
-            cout << "\nSelect an approach for printing monthly fake political news percentage:\n";
-            cout << "1. Binary Search Approach (requires sorted lists)\n";
-            cout << "2. Linear Search Approach\n";
-            cout << "Enter your choice: ";
-            int subChoice;
-            cin >> subChoice;
-            cin.ignore();
+            cout << "\nprinting monthly fake political news percentage in 2016:\n";
+            auto start = high_resolution_clock::now();
 
-            if (subChoice == 1) {
-                // === BINARY SEARCH APPROACH ===
-                auto start = high_resolution_clock::now();
+            fakeNewsList.AnalyseFakeArticles();
+            trueNewsList.AnalyseTrueArticles();
 
-                // 1) Make sure both lists are sorted by date
-                trueNewsList.sortByDate();
-                fakeNewsList.sortByDate();
-
-                // 2) Call the function that uses binary search
-                DoublyLinkedList::printMonthlyFakePoliticalNewsPercentage2016(trueNewsList, fakeNewsList);
-
-                auto end = high_resolution_clock::now();
-                auto duration = duration_cast<milliseconds>(end - start);
-                cout << "\nBinary search approach completed in "
-                    << duration.count() << " milliseconds." << endl;
-
-            }
-            else if (subChoice == 2) {
-                // === LINEAR SEARCH APPROACH ===
-                auto start = high_resolution_clock::now();
-
-                fakeNewsList.AnalyseFakeArticles();
-                trueNewsList.AnalyseTrueArticles();
-
-                auto end = high_resolution_clock::now();
-                auto duration = duration_cast<milliseconds>(end - start);
-                cout << "\nLinear search approach completed in "
-                    << duration.count() << " milliseconds." << endl;
-            }
-            else {
-                cout << "Invalid choice. Returning to main menu.\n";
-            }
+            auto end = high_resolution_clock::now();
+            auto duration = duration_cast<milliseconds>(end - start);
+            cout << "\nLinear search approach completed in " << duration.count() << " milliseconds." << endl;
             break;
         }
 
