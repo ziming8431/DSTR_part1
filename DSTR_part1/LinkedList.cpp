@@ -172,17 +172,20 @@ void DoublyLinkedList::loadToTxt(string filename) {
 void DoublyLinkedList::displayArticles() const {
     Article* current = head;
     const size_t maxTitleLength = 150;  // Truncate titles longer than 150 characters
+
     while (current) {
         string displayTitle = current->title;
         if (displayTitle.length() > maxTitleLength) {
             displayTitle = displayTitle.substr(0, maxTitleLength) + "...";
         }
-        cout << "Year: " << current->year << "\n";
+        cout << "Year: " << current->year << ", Month: " << current->month << " | ";
         cout << "Title: " << displayTitle << "\n";
         cout << "---------------------------\n";
         current = current->next;
     }
 }
+
+
 // ===================== Utility Functions =====================
 bool DoublyLinkedList::isValidRow(const Article& article) {
     if (article.title.empty() || article.text.empty() || article.subject.empty() || article.date.empty())
@@ -221,7 +224,7 @@ string DoublyLinkedList::toLowercase(const string& s) {
 }
 
 // ===================== Merge Sort Functions =====================
-bool DoublyLinkedList::compareArticles(Article* a, Article* b) {
+bool DoublyLinkedList::compareArticles(Article* a, Article* b) const {
     if (a->year != b->year)
         return a->year < b->year;
     return a->month < b->month;
@@ -292,10 +295,9 @@ Article* DoublyLinkedList::mergeSortIterative(Article* head) {
     return sortedHead;
 }
 
-void DoublyLinkedList::MergeSort() {
-    if (!head || !head->next) {
-        return;
-    }
+void DoublyLinkedList::MergeSort(size_t& memoryUsed) {
+    if (!head || !head->next) return;
+    memoryUsed += sizeof(Article); // Dummy node in mergeSortIterative
     head = mergeSortIterative(head);
     Article* temp = head;
     while (temp->next) temp = temp->next;
@@ -340,32 +342,27 @@ void DoublyLinkedList::swapNodes(Article* a, Article* b) {
     }
 }
 
-void DoublyLinkedList::bubbleSort() {
-    if (!head || !head->next) {
-        return;
-    } 
-
+void DoublyLinkedList::bubbleSort(size_t& memoryUsed) {
+    if (!head || !head->next) return;
     bool swapped;
     Article* end = nullptr;
-
     do {
         swapped = false;
         Article* current = head;
-
         while (current->next != end) {
             if (!compareArticles(current, current->next)) {
                 swapNodes(current, current->next);
                 swapped = true;
-                // After swapping, current->next is the new "current" position
                 Article* temp = current;
-                current = current->prev; // Move back to the swapped node
-                if (!current->prev) head = current; // Update head if necessary
-                if (!current->next->next) tail = current->next; // Update tail if necessary
+                current = current->prev;
+                if (!current->prev) head = current;
+                if (!current->next->next) tail = current->next;
             }
             current = current->next;
         }
-        end = current; // After this pass, largest element is at 'current'
+        end = current;
     } while (swapped);
+    // Minimal extra memory (just pointers), no significant allocation
 }
 
 
@@ -385,20 +382,19 @@ Article* DoublyLinkedList::partition(Article* low, Article* high) {
     return i;
 }
 
-void DoublyLinkedList::quickSortRec(Article* low, Article* high) {
+void DoublyLinkedList::quickSortRec(Article* low, Article* high, size_t& memoryUsed) {
     if (high != nullptr && low != high && low != high->next) {
+        memoryUsed += sizeof(Article*); // Stack frame for pointers
         Article* p = partition(low, high);
-        quickSortRec(low, p->prev);
-        quickSortRec(p->next, high);
+        quickSortRec(low, p->prev, memoryUsed);
+        quickSortRec(p->next, high, memoryUsed);
     }
 }
 
-void DoublyLinkedList::quickSort() {
-    if (!head || !head->next) {
-        return;
-    }
-	cout << "Sorting using Quick Sort..." << endl;
-    quickSortRec(head, tail);
+void DoublyLinkedList::quickSort(size_t& memoryUsed) {
+    if (!head || !head->next) return;
+    cout << "Sorting using Quick Sort..." << endl;
+    quickSortRec(head, tail, memoryUsed);
 }
 
 // ===================== Search Function =====================

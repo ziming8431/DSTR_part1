@@ -33,7 +33,7 @@ private:
     Article* mergeLists(Article* l1, Article* l2);
 
     // Comparison function: sorts primarily by year, then by month.
-    bool compareArticles(Article* a, Article* b);
+    bool compareArticles(Article* a, Article* b) const;
 
     // Helper function to parse the date string into year and month.
     void parseDate(const string& dateStr, int& year, int& month);
@@ -43,7 +43,7 @@ private:
 
     // Quick sort helper functions.
     Article* partition(Article* low, Article* high);
-    void quickSortRec(Article* low, Article* high);
+    void quickSortRec(Article* low, Article* high, size_t& memoryUsed);
 
     // ======= Search Helper Functions (no built-in containers) =======
     void searchByYear(int year);
@@ -77,13 +77,13 @@ public:
     string getFakeGovernmentNewsText();
 
     // Sorting and counting.
-    void MergeSort();        // Merge Sort
+    void MergeSort(size_t& memoryUsed);        // Merge Sort
     int countArticles() const; // <--- now const
 
     // Additional sorts.
 
-	void bubbleSort();
-    void quickSort();
+	void bubbleSort(size_t& memoryUsed);
+    void quickSort(size_t& memoryUsed);
     void swapNodes(Article* a, Article* b);
 
 

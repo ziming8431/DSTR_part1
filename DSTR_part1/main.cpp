@@ -19,7 +19,7 @@ int main() {
         cout << "\n=== Main Menu ===" << endl;
         cout << "1. Test Sorting Algorithms" << endl;
         cout << "2. Search Articles" << endl;
-        cout << "3. Find Frequency Word" << endl;
+        cout << "3. Find Frequency Word in Government news" << endl;
         cout << "4. Print Monthly Fake Political News Percentage" << endl;
         cout << "5. Exit" << endl;
         cout << "Enter your choice: ";
@@ -49,35 +49,64 @@ int main() {
             int countBeforeTrue = sortedTrue->countArticles();
             int countBeforeFake = sortedFake->countArticles();
 
+            // Initialize memory tracking
+            size_t memoryUsed = 0;
+            // Add memory used by cloned lists
+            memoryUsed += sizeof(Article) * countBeforeTrue; // True articles
+            memoryUsed += sizeof(Article) * countBeforeFake; // Fake articles
+
             auto start = high_resolution_clock::now();
             switch (sortChoice) {
             case 1:
                 cout << "\nSorting using Merge Sort..." << endl;
-                sortedTrue->MergeSort();
-                sortedFake->MergeSort();
+                sortedTrue->MergeSort(memoryUsed);
+                sortedFake->MergeSort(memoryUsed);
                 break;
             case 2:
                 cout << "\nSorting using Bubble Sort..." << endl;
-                sortedTrue->bubbleSort();
-                sortedFake->bubbleSort();
+                sortedTrue->bubbleSort(memoryUsed);
+                sortedFake->bubbleSort(memoryUsed);
                 break;
             case 3:
                 cout << "\nSorting using Quick Sort..." << endl;
-                sortedTrue->quickSort();
-                sortedFake->quickSort();
+                sortedTrue->quickSort(memoryUsed);
+                sortedFake->quickSort(memoryUsed);
                 break;
             }
             auto end = high_resolution_clock::now();
             auto duration = duration_cast<milliseconds>(end - start);
             int countAfterTrue = sortedTrue->countArticles();
             int countAfterFake = sortedFake->countArticles();
-            cout << "\nSorting completed in " << duration.count() << " milliseconds." << endl;
-            cout << "Article Count After Sorting: " << countAfterTrue + countAfterFake << "\n";
 
-            cout << "\nSorted True News Articles:\n";
-            sortedTrue->displayArticles();
-            cout << "\nSorted Fake News Articles:\n";
-            sortedFake->displayArticles();
+            cout << "\nSorting completed in " << duration.count() << " milliseconds." << endl;
+            cout << "Memory used for sorting: " << memoryUsed << " bytes" << "\n"<< endl;
+            cout << "True Article Count: " << countAfterTrue << "\n";
+            cout << "False Article Count: " << countAfterFake << "\n";
+
+            // Ask user if they want to print sorted true articles
+            char printTrueChoice;
+            cout << "\nDo you want to print the sorted true news articles? (y/n): ";
+            cin >> printTrueChoice;
+            cin.ignore();
+            if (tolower(printTrueChoice) == 'y') {
+                cout << "\nSorted True News Articles:\n";
+                sortedTrue->displayArticles();
+            }
+
+            // Ask user if they want to print sorted fake articles
+            char printFakeChoice;
+            cout << "\nDo you want to print the sorted fake news articles? (y/n): ";
+            cin >> printFakeChoice;
+            cin.ignore();
+            if (tolower(printFakeChoice) == 'y') {
+                cout << "\nSorted Fake News Articles:\n";
+                sortedFake->displayArticles();
+            }
+
+            cout << "\nSorting completed in " << duration.count() << " milliseconds." << endl;
+            cout << "True Article Count: " << countAfterTrue<< "\n";
+            cout << "False Article Count: " << countAfterFake << "\n";
+
 
             string fileSuffix;
             if (sortChoice == 1)
