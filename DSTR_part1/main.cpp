@@ -8,11 +8,18 @@ using namespace std;
 using namespace std::chrono;
 
 int main() {
-    // Load the original lists from CSV files.
     DoublyLinkedList trueNewsList;
     DoublyLinkedList fakeNewsList;
-    trueNewsList.loadFromCSV("true.csv");
-    fakeNewsList.loadFromCSV("fake.csv");
+
+    // Load data with memory tracking
+    size_t memoryUsedLoad = 0;
+    auto loadStart = high_resolution_clock::now();
+    trueNewsList.loadFromCSV("true.csv", memoryUsedLoad);
+    fakeNewsList.loadFromCSV("fake.csv", memoryUsedLoad);
+    auto loadEnd = high_resolution_clock::now();
+    auto loadDuration = duration_cast<milliseconds>(loadEnd - loadStart).count();
+    cout << "Memory used for loading: " << memoryUsedLoad << " bytes" << endl;
+    cout << "Time taken for loading CSVs: " << loadDuration << " milliseconds" << endl;
 
     bool exitProgram = false;
     while (!exitProgram) {
@@ -29,7 +36,6 @@ int main() {
 
         switch (mainChoice) {
         case 1: {
-            // Test Sorting Algorithms
             cout << "\nSelect sorting algorithm to test:" << endl;
             cout << "1. Merge Sort" << endl;
             cout << "2. Bubble Sort" << endl;
@@ -39,38 +45,37 @@ int main() {
             cin >> sortChoice;
             cin.ignore();
 
-            if (sortChoice != 1 && sortChoice != 2 && sortChoice != 3) {
-                cout << "Invalid choice. Returning to main menu.\n";
+            if (sortChoice < 1 || sortChoice > 3) {
+                cout << "Invalid choice." << endl;
                 break;
             }
+
 
             DoublyLinkedList* sortedTrue = trueNewsList.clone();
             DoublyLinkedList* sortedFake = fakeNewsList.clone();
             int countBeforeTrue = sortedTrue->countArticles();
             int countBeforeFake = sortedFake->countArticles();
 
-            // Initialize memory tracking
-            size_t memoryUsed = 0;
-            // Add memory used by cloned lists
-            memoryUsed += sizeof(Article) * countBeforeTrue; // True articles
-            memoryUsed += sizeof(Article) * countBeforeFake; // Fake articles
+            size_t memoryUsedSort = 0;
+
+            memoryUsedSort += sizeof(Article) * countBeforeTrue; // True articles
+            memoryUsedSort += sizeof(Article) * countBeforeFake; // Fake articles
 
             auto start = high_resolution_clock::now();
             switch (sortChoice) {
             case 1:
-                cout << "\nSorting using Merge Sort..." << endl;
-                sortedTrue->MergeSort(memoryUsed);
-                sortedFake->MergeSort(memoryUsed);
+                cout << "Initial memoryUsedSort: " << memoryUsedSort << " bytes" << endl;
+                sortedTrue->MergeSort(memoryUsedSort);
+                sortedFake->MergeSort(memoryUsedSort);
+                cout << "Initial memoryUsedSort: " << memoryUsedSort << " bytes" << endl;
                 break;
             case 2:
-                cout << "\nSorting using Bubble Sort..." << endl;
-                sortedTrue->bubbleSort(memoryUsed);
-                sortedFake->bubbleSort(memoryUsed);
+                sortedTrue->bubbleSort(memoryUsedSort);
+                sortedFake->bubbleSort(memoryUsedSort);
                 break;
             case 3:
-                cout << "\nSorting using Quick Sort..." << endl;
-                sortedTrue->quickSort(memoryUsed);
-                sortedFake->quickSort(memoryUsed);
+                sortedTrue->quickSort(memoryUsedSort);
+                sortedFake->quickSort(memoryUsedSort);
                 break;
             }
             auto end = high_resolution_clock::now();
@@ -79,7 +84,7 @@ int main() {
             int countAfterFake = sortedFake->countArticles();
 
             cout << "\nSorting completed in " << duration.count() << " milliseconds." << endl;
-            cout << "Memory used for sorting: " << memoryUsed << " bytes" << "\n"<< endl;
+            cout << "Memory used for sorting: " << memoryUsedSort << " bytes" << "\n" << endl;
             cout << "True Article Count: " << countAfterTrue << "\n";
             cout << "False Article Count: " << countAfterFake << "\n";
 
@@ -104,7 +109,7 @@ int main() {
             }
 
             cout << "\nSorting completed in " << duration.count() << " milliseconds." << endl;
-            cout << "True Article Count: " << countAfterTrue<< "\n";
+            cout << "True Article Count: " << countAfterTrue << "\n";
             cout << "False Article Count: " << countAfterFake << "\n";
 
 
@@ -124,9 +129,9 @@ int main() {
             delete sortedFake;
             break;
         }
-
         case 2: {
-            // Search Articles
+            size_t searchMemoryUsed = 0;
+            long long searchDuration = 0;
             cout << "\nSelect dataset to search:" << endl;
             cout << "1. True News" << endl;
             cout << "2. Fake News" << endl;
@@ -134,54 +139,49 @@ int main() {
             int datasetChoice;
             cin >> datasetChoice;
             cin.ignore();
+            auto searchStart = high_resolution_clock::now();
             if (datasetChoice == 1) {
                 trueNewsList.searchArticles();
+                auto searchEnd = high_resolution_clock::now();
+                auto searchDuration = duration_cast<milliseconds>(searchEnd - searchStart).count();
+                cout << "Memory used for searching true news: " << searchMemoryUsed << " bytes" << endl;
+                cout << "Time taken for searching true news: " << searchDuration << " milliseconds" << endl;
             }
             else if (datasetChoice == 2) {
                 fakeNewsList.searchArticles();
+                auto searchEnd = high_resolution_clock::now();
+                auto searchDuration = duration_cast<milliseconds>(searchEnd - searchStart).count();
+                cout << "Memory used for searching fake news: " << searchMemoryUsed << " bytes" << endl;
+                cout << "Time taken for searching fake news: " << searchDuration << " milliseconds" << endl;
             }
-            else {
-                cout << "Invalid dataset choice." << endl;
-            }
+            else cout << "Invalid dataset choice." << endl;
             break;
         }
-
         case 3: {
-            // Find Frequency Word
-            cout << "\n=== Frequency Word Analysis ===" << endl;
+            size_t memoryUsedAnalyze = 0;
             auto start = high_resolution_clock::now();
-
             WordFrequencyAnalyzer analyzer;
-            analyzer.analyzeAndDisplay(fakeNewsList, trueNewsList, "Government News");
-
+            analyzer.analyzeAndDisplay(fakeNewsList, trueNewsList, "Government News", memoryUsedAnalyze);
             auto end = high_resolution_clock::now();
             auto duration = duration_cast<milliseconds>(end - start);
-            cout << "\nFrequency word analysis completed in "
-                << duration.count() << " milliseconds." << endl;
+            cout << "Memory used for frequency analysis: " << memoryUsedAnalyze << " bytes" << endl;
+            cout << "Analysis completed in " << duration.count() << " milliseconds." << endl;
             break;
         }
-
         case 4: {
-            // Print Monthly Fake Political News Percentage
-            cout << "\nprinting monthly fake political news percentage in 2016:\n";
             auto start = high_resolution_clock::now();
-
             fakeNewsList.AnalyseFakeArticles();
             trueNewsList.AnalyseTrueArticles();
-
             auto end = high_resolution_clock::now();
             auto duration = duration_cast<milliseconds>(end - start);
-            cout << "\nLinear search approach completed in " << duration.count() << " milliseconds." << endl;
+            cout << "Linear search completed in " << duration.count() << " milliseconds." << endl;
             break;
         }
-
         case 5:
             exitProgram = true;
             break;
-
         default:
-            cout << "Invalid choice. Please try again." << endl;
-            break;
+            cout << "Invalid choice." << endl;
         }
     }
     return 0;

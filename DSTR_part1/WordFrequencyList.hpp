@@ -28,7 +28,7 @@ private:
     // Helper functions
     static string cleanWord(const string& word);
     bool isCommonWord(const string& word) const;
-    void insertOrIncrementWord(const string& word);
+    void insertOrIncrementWord(const string& word, size_t& memoryUsed);
     void sortWordsByFrequency();
     void clearWordList();
     WordNode* findMostFrequentWord();
@@ -37,7 +37,7 @@ public:
     WordFrequencyAnalyzer();
     ~WordFrequencyAnalyzer();
 
-    void analyzeAndDisplay(DoublyLinkedList& fakeList, DoublyLinkedList& trueList, const string& targetSubject);
+    void analyzeAndDisplay(DoublyLinkedList& fakeList, DoublyLinkedList& trueList, const string& targetSubject, size_t& memoryUsed);
 };
 
 #endif

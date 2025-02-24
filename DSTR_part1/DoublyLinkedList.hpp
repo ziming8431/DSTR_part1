@@ -41,16 +41,14 @@ private:
     // Helper function to swap the data of two articles (used in bubble & quick sort).
     void swapArticleData(Article* a, Article* b);
 
-    // Quick sort helper functions.
     Article* partition(Article* low, Article* high);
     void quickSortRec(Article* low, Article* high, size_t& memoryUsed);
 
-    // ======= Search Helper Functions (no built-in containers) =======
-    void searchByYear(int year);
-    void searchByMonth(int month);
-    void searchBySubject(const string& subject);
-    void searchByKeywordInTitle(const string& keyword);
-    void searchByKeywordInText(const string& keyword);
+    void searchByYear(int year, size_t& memoryUsed);
+    void searchByMonth(int month, size_t& memoryUsed);
+    void searchBySubject(const string& subject, size_t& memoryUsed);
+    void searchByKeywordInTitle(const string& keyword, size_t& memoryUsed);
+    void searchByKeywordInText(const string& keyword, size_t& memoryUsed);
     void displaySearchResults(Article** results, int resultCount, const string& searchType, const string& searchTerm);
     static bool containsIgnoreCase(const string& source, const string& search);
 
@@ -60,25 +58,24 @@ public:
 
     void displayArticles() const;
     // Article creation and insertion.
-    Article* createArticle(string title, string text, string subject, string date);
+    Article* createArticle(string title, string text, string subject, string date, size_t& memoryUsed); 
     void InsertArticle(Article* article);
 
     // File operations.
-    void loadFromCSV(string filename);
+    void loadFromCSV(string filename, size_t& memoryUsed);
     void loadToTxt(string filename);
 
     // Utility functions.
     bool isValidRow(const Article& article);
 
-    // Make this static so we can call from static methods (or consider a free function).
+    // Make this static so we can call from static methods
     static string toLowercase(const string& s);
 
     bool hasArticle(const Article* target);
-    string getFakeGovernmentNewsText();
 
     // Sorting and counting.
-    void MergeSort(size_t& memoryUsed);        // Merge Sort
-    int countArticles() const; // <--- now const
+    void MergeSort(size_t& memoryUsed);     
+    int countArticles() const; 
 
     // Additional sorts.
 

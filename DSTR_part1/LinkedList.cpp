@@ -79,8 +79,9 @@ void DoublyLinkedList::parseDate(const string& dateStr, int& year, int& month) {
 }
 
 // ===================== Article Creation and Insertion =====================
-Article* DoublyLinkedList::createArticle(string title, string text, string subject, string date) {
+Article* DoublyLinkedList::createArticle(string title, string text, string subject, string date, size_t& memoryUsed) {
     Article* newArticle = new Article;
+    memoryUsed += sizeof(Article); // Track memory for the Article struct
     newArticle->title = title;
     newArticle->text = text;
     newArticle->subject = subject;
@@ -104,7 +105,7 @@ void DoublyLinkedList::InsertArticle(Article* article) {
 }
 
 // ===================== File Operations =====================
-void DoublyLinkedList::loadFromCSV(string filename) {
+void DoublyLinkedList::loadFromCSV(string filename, size_t& memoryUsed) {
     cout << "Opening file: " << filename << endl;
     ifstream file(filename);
     if (!file.is_open()) {
@@ -112,7 +113,7 @@ void DoublyLinkedList::loadFromCSV(string filename) {
         return;
     }
     string line;
-    getline(file, line);  // Skip header.
+    getline(file, line); // Skip header
     while (getline(file, line)) {
         string title, text, subject, date;
         string field;
@@ -120,9 +121,7 @@ void DoublyLinkedList::loadFromCSV(string filename) {
         int column = 0;
         for (size_t i = 0; i < line.size(); i++) {
             char c = line[i];
-            if (c == '"') {
-                insideQuote = !insideQuote;
-            }
+            if (c == '"') insideQuote = !insideQuote;
             else if (c == ',' && !insideQuote) {
                 if (column == 0) title = field;
                 else if (column == 1) text = field;
@@ -131,15 +130,12 @@ void DoublyLinkedList::loadFromCSV(string filename) {
                 field.clear();
                 column++;
             }
-            else {
-                field += c;
-            }
+            else field += c;
         }
-        if (column == 3)
-            date = field;
+        if (column == 3) date = field;
         if (!title.empty() && !text.empty() && !subject.empty() && !date.empty()) {
             cout << "Inserting article: " << title << endl;
-            InsertArticle(createArticle(title, text, subject, date));
+            InsertArticle(createArticle(title, text, subject, date, memoryUsed));
         }
         else {
             cout << "Skipping invalid row" << endl;
@@ -192,16 +188,6 @@ bool DoublyLinkedList::isValidRow(const Article& article) {
         return false;
 }
 
-string DoublyLinkedList::getFakeGovernmentNewsText() {
-    string combinedText = "";
-    Article* current = head;
-    while (current) {
-        if (current->subject == "government")
-            combinedText += current->text + " ";
-        current = current->next;
-    }
-    return combinedText;
-}
 
 bool DoublyLinkedList::hasArticle(const Article* target) {
     Article* current = head;
@@ -296,8 +282,10 @@ Article* DoublyLinkedList::mergeSortIterative(Article* head) {
 }
 
 void DoublyLinkedList::MergeSort(size_t& memoryUsed) {
+    cout << "Before MergeSort, memoryUsed: " << memoryUsed << " bytes" << endl;
     if (!head || !head->next) return;
-    memoryUsed += sizeof(Article); // Dummy node in mergeSortIterative
+    memoryUsed += sizeof(Article);
+    cout << "After dummy node, memoryUsed: " << memoryUsed << " bytes" << endl;
     head = mergeSortIterative(head);
     Article* temp = head;
     while (temp->next) temp = temp->next;
@@ -362,7 +350,6 @@ void DoublyLinkedList::bubbleSort(size_t& memoryUsed) {
         }
         end = current;
     } while (swapped);
-    // Minimal extra memory (just pointers), no significant allocation
 }
 
 
@@ -411,6 +398,7 @@ void DoublyLinkedList::searchArticles() {
     cout << "Enter choice (1-5): ";
     getline(cin, searchType);
 
+    size_t memoryUsed = 0; // Local memory tracking
     if (searchType == "1") {
         int year;
         cout << "Enter year to search for: ";
@@ -418,12 +406,12 @@ void DoublyLinkedList::searchArticles() {
         getline(cin, yearStr);
         try {
             year = stoi(yearStr);
+            searchByYear(year, memoryUsed);
+            cout << "Memory used for search: " << memoryUsed << " bytes" << endl;
         }
         catch (...) {
             cout << "Invalid year format. Please enter a number." << endl;
-            return;
         }
-        searchByYear(year);
     }
     else if (searchType == "2") {
         int month;
@@ -436,39 +424,43 @@ void DoublyLinkedList::searchArticles() {
                 cout << "Month must be between 1 and 12." << endl;
                 return;
             }
+            searchByMonth(month, memoryUsed);
+            cout << "Memory used for search: " << memoryUsed << " bytes" << endl;
         }
         catch (...) {
-            cout << "Invalid month format. Please enter a number between 1 and 12." << endl;
-            return;
+            cout << "Invalid month format." << endl;
         }
-        searchByMonth(month);
     }
     else if (searchType == "3") {
         string subject;
         cout << "Enter subject to search for: ";
         getline(cin, subject);
-        searchBySubject(subject);
+        searchBySubject(subject, memoryUsed);
+        cout << "Memory used for search: " << memoryUsed << " bytes" << endl;
     }
     else if (searchType == "4") {
         string keyword;
         cout << "Enter keyword to search in titles: ";
         getline(cin, keyword);
-        searchByKeywordInTitle(keyword);
+        searchByKeywordInTitle(keyword, memoryUsed);
+        cout << "Memory used for search: " << memoryUsed << " bytes" << endl;
     }
     else if (searchType == "5") {
         string keyword;
-        cout << "Enter keyword to search in article text: ";
+        cout << "Enter keyword to search in text: ";
         getline(cin, keyword);
-        searchByKeywordInText(keyword);
+        searchByKeywordInText(keyword, memoryUsed);
+        cout << "Memory used for search: " << memoryUsed << " bytes" << endl;
     }
     else {
         cout << "Invalid choice. Please try again." << endl;
     }
 }
 
-void DoublyLinkedList::searchByYear(int year) {
+void DoublyLinkedList::searchByYear(int year, size_t& memoryUsed) {
     int total = countArticles();
     Article** results = new Article * [total];
+    memoryUsed += sizeof(Article*) * total; // Track memory for pointer array
     int resultCount = 0;
     Article* current = head;
     while (current) {
@@ -480,9 +472,10 @@ void DoublyLinkedList::searchByYear(int year) {
     delete[] results;
 }
 
-void DoublyLinkedList::searchByMonth(int month) {
+void DoublyLinkedList::searchByMonth(int month, size_t& memoryUsed) {
     int total = countArticles();
     Article** results = new Article * [total];
+    memoryUsed += sizeof(Article*) * total;
     int resultCount = 0;
     Article* current = head;
     while (current) {
@@ -498,9 +491,10 @@ void DoublyLinkedList::searchByMonth(int month) {
     delete[] results;
 }
 
-void DoublyLinkedList::searchBySubject(const string& subject) {
+void DoublyLinkedList::searchBySubject(const string& subject, size_t& memoryUsed) {
     int total = countArticles();
     Article** results = new Article * [total];
+    memoryUsed += sizeof(Article*) * total;
     int resultCount = 0;
     Article* current = head;
     while (current) {
@@ -512,9 +506,10 @@ void DoublyLinkedList::searchBySubject(const string& subject) {
     delete[] results;
 }
 
-void DoublyLinkedList::searchByKeywordInTitle(const string& keyword) {
+void DoublyLinkedList::searchByKeywordInTitle(const string& keyword, size_t& memoryUsed) {
     int total = countArticles();
     Article** results = new Article * [total];
+    memoryUsed += sizeof(Article*) * total;
     int resultCount = 0;
     Article* current = head;
     while (current) {
@@ -526,9 +521,10 @@ void DoublyLinkedList::searchByKeywordInTitle(const string& keyword) {
     delete[] results;
 }
 
-void DoublyLinkedList::searchByKeywordInText(const string& keyword) {
+void DoublyLinkedList::searchByKeywordInText(const string& keyword, size_t& memoryUsed) {
     int total = countArticles();
     Article** results = new Article * [total];
+    memoryUsed += sizeof(Article*) * total;
     int resultCount = 0;
     Article* current = head;
     while (current) {

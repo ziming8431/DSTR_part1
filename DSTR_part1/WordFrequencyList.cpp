@@ -21,7 +21,7 @@ const string WordFrequencyAnalyzer::COMMON_WORDS[] = {
     "above", "below", "between", "through", "during", "before", "after", "out",
     "so", "such", "no", "yes", "up", "down", "just", "more", "most", "some", "any",
     "only", "very", "too", "also", "even", "than", "its", "my", "your", "our", "us",
-    "we", "them", "being", "been", "do", "does", "did", "done", "say", "said", "says", "i", "you", "t"
+    "we", "them", "being", "been", "do", "does", "did", "done", "say", "said", "says", "i", "you", "t", "were"
 };
 
 WordFrequencyAnalyzer::~WordFrequencyAnalyzer() {
@@ -46,10 +46,9 @@ bool WordFrequencyAnalyzer::isCommonWord(const string& word) const {
     }
     return false;
 }
-void WordFrequencyAnalyzer::insertOrIncrementWord(const string& word) {
+void WordFrequencyAnalyzer::insertOrIncrementWord(const string& word, size_t& memoryUsed) {
     WordNode* current = wordHead;
     WordNode* prev = nullptr;
-
     while (current) {
         if (current->word == word) {
             current->count++;
@@ -58,14 +57,10 @@ void WordFrequencyAnalyzer::insertOrIncrementWord(const string& word) {
         prev = current;
         current = current->next;
     }
-
     WordNode* newNode = new WordNode(word, 1);
-    if (prev) {
-        prev->next = newNode;
-    }
-    else {
-        wordHead = newNode;
-    }
+    memoryUsed += sizeof(WordNode); // Track memory for new WordNode
+    if (prev) prev->next = newNode;
+    else wordHead = newNode;
 }
 
 void WordFrequencyAnalyzer::sortWordsByFrequency() {
@@ -119,51 +114,38 @@ WordNode* WordFrequencyAnalyzer::findMostFrequentWord() {
     return mostFrequentWord;
 }
 
-void WordFrequencyAnalyzer::analyzeAndDisplay(DoublyLinkedList& fakeList, DoublyLinkedList& trueList, const string& targetSubject) {
+void WordFrequencyAnalyzer::analyzeAndDisplay(DoublyLinkedList& fakeList, DoublyLinkedList& trueList, const string& targetSubject, size_t& memoryUsed) {
     cout << "\nStarting word frequency analysis for subject: " << targetSubject << endl;
     cout << "Processing articles..." << endl;
-
-    // Process fake news articles
     Article* currentArticle = fakeList.getHead();
     int articleCount = 0;
     while (currentArticle) {
-        // Check subject match and ensure it's not in true news
-        if (fakeList.toLowercase(currentArticle->subject) ==
-            fakeList.toLowercase(targetSubject) &&
+        if (fakeList.toLowercase(currentArticle->subject) == fakeList.toLowercase(targetSubject) &&
             !trueList.hasArticle(currentArticle)) {
-
             articleCount++;
             istringstream iss(currentArticle->text);
             string word;
             while (iss >> word) {
                 string cleaned = cleanWord(word);
                 if (!cleaned.empty() && !isCommonWord(cleaned)) {
-                    insertOrIncrementWord(cleaned);
+                    insertOrIncrementWord(cleaned, memoryUsed);
                 }
             }
         }
         currentArticle = currentArticle->next;
     }
-
     cout << "Processed " << articleCount << " matching articles." << endl;
     cout << "Sorting words by frequency..." << endl;
-
-    // Sort words by frequency (highest count first)
     sortWordsByFrequency();
-
     cout << "\n=== Top 20 Frequent Words ===" << endl;
     WordNode* currentWord = wordHead;
     int count = 0;
-    while (currentWord != nullptr && count < 20) {
+    while (currentWord && count < 20) {
         cout << currentWord->word << " (" << currentWord->count << ")" << endl;
         currentWord = currentWord->next;
         count++;
     }
-    if (count == 0) {
-        cout << "No words found." << endl;
-    }
-
+    if (count == 0) cout << "No words found." << endl;
     cout << "\nWord frequency analysis complete." << endl;
-
     clearWordList();
 }
